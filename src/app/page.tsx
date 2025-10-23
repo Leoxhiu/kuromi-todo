@@ -1,19 +1,19 @@
-"use client";
-import { Box, Button, Container } from "@mantine/core";
+import { TaskSection } from "@/components/TaskSection";
+import { Box, Container, SimpleGrid, Stack, Title } from "@mantine/core";
 
 export default function Home() {
-    const handleClick = () => {
-        console.log("Button clicked");
-    };
-
     return (
-        <Container>
-            <Box>
-                <h1>Kuromi's TODOs</h1>
-                <Button fullWidth variant="light" onClick={handleClick}>
-                    Add task
-                </Button>
-            </Box>
+        <Container h="95vh" size="xl" mt="xl">
+            <Stack h="100%" gap="xs">
+                <Title order={2} ta="center">
+                    To-do list!!
+                </Title>
+                <SimpleGrid h="100%" cols={{ base: 1, sm: 2, md: 3 }}>
+                    <Box h="100%">
+                        <TaskSection />
+                    </Box>
+                </SimpleGrid>
+            </Stack>
         </Container>
     );
 }
