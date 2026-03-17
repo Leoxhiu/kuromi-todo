@@ -1,11 +1,11 @@
 ## 2026-03-17
 
-Implemented Drag and Drop (DND) feature
+Implemented Drag and Drop (DnD) feature
 
 ### Added
 
 -   Added TaskContainer and task types
--   Added Drag and Drop feature
+-   Added DnD feature and drag overlay with DnD kit
 
 ## 2025-10-23
 
