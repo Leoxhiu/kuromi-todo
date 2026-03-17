@@ -1,5 +1,5 @@
-import { TaskSection } from "@/components/TaskSection";
-import { Box, Container, SimpleGrid, Stack, Title } from "@mantine/core";
+import { TaskContainer } from "@/components/TaskContainer";
+import { Container, Stack, Title } from "@mantine/core";
 
 export default function Home() {
     return (
@@ -8,11 +8,7 @@ export default function Home() {
                 <Title order={2} ta="center">
                     To-do list!!
                 </Title>
-                <SimpleGrid h="100%" cols={{ base: 1, sm: 2, md: 3 }}>
-                    <Box h="100%">
-                        <TaskSection />
-                    </Box>
-                </SimpleGrid>
+                <TaskContainer />
             </Stack>
         </Container>
     );
