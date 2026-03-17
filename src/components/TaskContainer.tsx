@@ -1,10 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { DndContext, DragEndEvent } from "@dnd-kit/core";
+import {
+    DndContext,
+    DragEndEvent,
+    DragOverlay,
+    DragStartEvent,
+} from "@dnd-kit/core";
 import { SimpleGrid } from "@mantine/core";
 import { TaskSection } from "@/components/TaskSection";
 import { Section, Task } from "types/tasks";
+import { TaskCard } from "./TaskCard";
 
 export const TaskContainer = () => {
     const sections: Section[] = [
@@ -38,8 +44,19 @@ export const TaskContainer = () => {
     ];
 
     const [tasks, setTasks] = useState<Task[]>(initialTasks);
+    const [activeId, setActiveId] = useState<string | null>(null);
+
+    const activeTask = tasks.find((task) => task.id === activeId);
+
+    function handleDragStart(event: DragStartEvent) {
+        const { active } = event;
+        const taskId = active.id as string;
+
+        setActiveId(taskId);
+    }
 
     function handleDragEnd(event: DragEndEvent) {
+        setActiveId(null);
         const { active, over } = event;
 
         if (!over) return;
@@ -56,7 +73,11 @@ export const TaskContainer = () => {
 
     return (
         <SimpleGrid h="100%" cols={{ base: 1, sm: 2, md: 3 }}>
-            <DndContext onDragEnd={handleDragEnd}>
+            <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+                <DragOverlay>
+                    {activeTask ? <TaskCard task={activeTask} /> : null}
+                </DragOverlay>
+
                 {sections.map((section) => (
                     <TaskSection
                         key={section.id}
