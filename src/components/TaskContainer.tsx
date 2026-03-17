@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
     DndContext,
     DragEndEvent,
@@ -50,9 +50,24 @@ export const TaskContainer = () => {
     ];
 
     const [tasks, setTasks] = useState<Task[]>(initialTasks);
+
     const [activeId, setActiveId] = useState<string | null>(null);
 
+    const [mounted, setMounted] = useState(false);
+
     const activeTask = tasks.find((task) => task.id === activeId);
+
+    useEffect(() => {
+        const savedTasks = localStorage.getItem("tasks");
+        if (savedTasks) {
+            setTasks(JSON.parse(savedTasks));
+        }
+        setMounted(true);
+    }, []);
+
+    useEffect(() => {
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+    }, [tasks]);
 
     function handleDragStart(event: DragStartEvent) {
         const { active } = event;
@@ -103,26 +118,28 @@ export const TaskContainer = () => {
 
     return (
         <SimpleGrid h="100%" cols={{ base: 1, sm: 2, md: 3 }}>
-            <DndContext
-                sensors={sensors}
-                collisionDetection={pointerWithin}
-                onDragStart={handleDragStart}
-                onDragEnd={handleDragEnd}
-            >
-                {sections.map((section) => (
-                    <TaskSection
-                        key={section.id}
-                        section={section}
-                        tasks={tasks.filter(
-                            (task) => task.status === section.id,
-                        )}
-                    ></TaskSection>
-                ))}
+            {!mounted ? null : (
+                <DndContext
+                    sensors={sensors}
+                    collisionDetection={pointerWithin}
+                    onDragStart={handleDragStart}
+                    onDragEnd={handleDragEnd}
+                >
+                    {sections.map((section) => (
+                        <TaskSection
+                            key={section.id}
+                            section={section}
+                            tasks={tasks.filter(
+                                (task) => task.status === section.id,
+                            )}
+                        ></TaskSection>
+                    ))}
 
-                <DragOverlay>
-                    {activeTask ? <TaskCard task={activeTask} /> : null}
-                </DragOverlay>
-            </DndContext>
+                    <DragOverlay>
+                        {activeTask ? <TaskCard task={activeTask} /> : null}
+                    </DragOverlay>
+                </DndContext>
+            )}
         </SimpleGrid>
     );
 };
