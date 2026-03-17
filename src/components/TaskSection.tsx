@@ -1,3 +1,5 @@
+"use client";
+
 import {
     Button,
     Group,
@@ -7,61 +9,41 @@ import {
     Title,
 } from "@mantine/core";
 import { TaskCard } from "./TaskCard";
+import { useDroppable } from "@dnd-kit/core";
+import { Section as SectionType, Task } from "types/tasks";
 
-export const TaskSection = () => {
+type TaskSectionProps = {
+    section: SectionType;
+    tasks: Task[];
+};
+
+export const TaskSection = ({ section, tasks }: TaskSectionProps) => {
+    const { setNodeRef } = useDroppable({
+        id: section.id,
+    });
+
     return (
-        <Paper h="100%" p="md" bg="violet.0" shadow="xs" withBorder>
+        <Paper
+            ref={setNodeRef}
+            h="100%"
+            p="md"
+            bg="violet.0"
+            shadow="xs"
+            withBorder
+        >
             <Stack h="100%" gap="sm">
                 <Group justify="space-between">
                     <Title order={4} fw="bold">
-                        Priority
+                        {section.title}
                     </Title>
                     <Button>Add</Button>
                 </Group>
 
-                <ScrollAreaAutosize
-                    mah={750}
-                    mx="auto"
-                    type="scroll"
-                    scrollbarSize={8}
-                >
+                <ScrollAreaAutosize mah={750} type="scroll" scrollbarSize={8}>
                     <Stack gap="xs">
-                        <TaskCard
-                            text="First task... Lorem Ipsum is simply dummy text
-                                of the printing and typesetting industry. Lorem
-                                Ipsum has been the industry's standard dummy
-                                text ever since the 1500s, when an unknown
-                                printer took a gall"
-                        ></TaskCard>
-                        <TaskCard
-                            text="First task... Lorem Ipsum is simply dummy text
-                                of the printing and typesetting industry. Lorem
-                                Ipsum has been the industry's standard dummy
-                                text ever since the 1500s, when an unknown
-                                printer took a gall"
-                        ></TaskCard>
-                        <TaskCard
-                            text="First task... Lorem Ipsum is simply dummy text
-                                of the printing and typesetting industry. Lorem
-                                Ipsum has been the industry's standard dummy
-                                text ever since the 1500s, when an unknown
-                                printer took a gall"
-                        ></TaskCard>
-                        <TaskCard
-                            text="First task... Lorem Ipsum is simply dummy text
-                                of the printing and typesetting industry. Lorem
-                                Ipsum has been the industry's standard dummy
-                                text ever since the 1500s, when an unknown
-                                printer took a gall"
-                        ></TaskCard>
-                        <TaskCard text="Last 2 task..."></TaskCard>
-                        <TaskCard
-                            text="Last task...Final task... Lorem Ipsum is simply dummy text
-                                of the printing and typesetting industry. Lorem
-                                Ipsum has been the industry's standard dummy
-                                text ever since the 1500s, when an unknown
-                                printer took a gall"
-                        ></TaskCard>
+                        {tasks.map((task) => (
+                            <TaskCard key={task.id} task={task}></TaskCard>
+                        ))}
                     </Stack>
                 </ScrollAreaAutosize>
             </Stack>
