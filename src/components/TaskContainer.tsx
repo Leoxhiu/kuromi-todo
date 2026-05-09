@@ -3,9 +3,10 @@
 import { useState, useEffect } from "react";
 import {
     DndContext,
-    DragEndEvent,
     DragOverlay,
     DragStartEvent,
+    DragEndEvent,
+    DragCancelEvent,
     KeyboardSensor,
     PointerSensor,
     pointerWithin,
@@ -28,13 +29,8 @@ export const TaskContainer = () => {
     const initialTasks: Task[] = [
         {
             id: "1",
-            status: "PRIORITY",
+            status: "IN_PROGRESS",
             content: "This is task 1",
-        },
-        {
-            id: "10",
-            status: "PRIORITY",
-            content: "This is task 20",
         },
         {
             id: "2",
@@ -43,13 +39,19 @@ export const TaskContainer = () => {
         },
         {
             id: "3",
-            status: "DONE",
+            status: "IN_PROGRESS",
+            content: "This is task 3",
+        },
+        {
+            id: "4",
+            status: "IN_PROGRESS",
             content:
                 "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
         },
     ];
 
     const [tasks, setTasks] = useState<Task[]>(initialTasks);
+    const invertedTasks = [...tasks].reverse();
 
     const [activeId, setActiveId] = useState<string | null>(null);
 
@@ -109,8 +111,18 @@ export const TaskContainer = () => {
         setActiveId(null);
     }
 
+    function handleDragCancel(event: DragCancelEvent) {
+        void event;
+        setActiveId(null);
+    }
+
     const sensors = useSensors(
-        useSensor(PointerSensor),
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                delay: 100, // Delay on dragging to prevent accidental drags when clicking
+                tolerance: 5, // Allow a small movement before activating the drag
+            },
+        }),
         useSensor(KeyboardSensor, {
             coordinateGetter: sortableKeyboardCoordinates,
         }),
@@ -124,19 +136,29 @@ export const TaskContainer = () => {
                     collisionDetection={pointerWithin}
                     onDragStart={handleDragStart}
                     onDragEnd={handleDragEnd}
+                    onDragCancel={handleDragCancel}
                 >
                     {sections.map((section) => (
                         <TaskSection
                             key={section.id}
                             section={section}
-                            tasks={tasks.filter(
+                            tasks={invertedTasks.filter(
                                 (task) => task.status === section.id,
                             )}
                         ></TaskSection>
                     ))}
 
                     <DragOverlay>
-                        {activeTask ? <TaskCard task={activeTask} /> : null}
+                        {activeTask ? (
+                            <TaskCard
+                                injectStyle={{
+                                    cursor: "grabbing",
+                                    boxShadow: "0 5px 10px rgba(0, 0, 0, 0.2)",
+                                    border: "2px solid rgba(0, 0, 0, 0.59)",
+                                }}
+                                task={activeTask}
+                            />
+                        ) : null}
                     </DragOverlay>
                 </DndContext>
             )}
