@@ -5,6 +5,7 @@ import {
     DndContext,
     DragOverlay,
     DragStartEvent,
+    DragOverEvent,
     DragEndEvent,
     DragCancelEvent,
     KeyboardSensor,
@@ -71,6 +72,11 @@ export const TaskContainer = () => {
         localStorage.setItem("tasks", JSON.stringify(tasks));
     }, [tasks]);
 
+    function isCrossSectionMove(overId: Task["status"]): boolean {
+        const sectionIds = sections.map((section) => section.id);
+        return sectionIds.includes(overId);
+    }
+
     function handleDragStart(event: DragStartEvent) {
         const { active } = event;
         const taskId = active.id as string;
@@ -78,34 +84,47 @@ export const TaskContainer = () => {
         setActiveId(taskId);
     }
 
+    function handleDragOver(event: DragOverEvent) {
+        const { active, over } = event;
+
+        if (!over) return;
+
+        const activeId = active.id as string;
+        const overId = over.id as Task["status"];
+
+        // Check if the over ID is a section ID (cross-section move)
+        if (!isCrossSectionMove(overId)) {
+            return;
+        }
+
+        // Update task status on drag over for immediate visual feedback
+        const newStatus = overId as Task["status"];
+        setTasks(() =>
+            tasks.map((task) =>
+                task.id === activeId ? { ...task, status: newStatus } : task,
+            ),
+        );
+    }
+
     function handleDragEnd(event: DragEndEvent) {
         const { active, over } = event;
 
         if (!over) return;
 
-        const taskId = active.id as string;
+        const activeId = active.id as string;
         const overId = over.id as Task["status"];
 
         // Check if the over ID is a section ID (cross-section move)
-        const sectionIds = sections.map((section) => section.id);
-        const isDroppedOnSection = sectionIds.includes(overId);
+        if (isCrossSectionMove(overId)) {
+            return;
+        }
 
-        if (isDroppedOnSection) {
-            // Cross-section move
-            const newStatus = overId as Task["status"];
-            setTasks(() =>
-                tasks.map((task) =>
-                    task.id === taskId ? { ...task, status: newStatus } : task,
-                ),
-            );
-        } else if (active.id !== over.id) {
-            // Within-section reorder
-            const oldIndex = tasks.findIndex((task) => task.id === active.id);
-            const newIndex = tasks.findIndex((task) => task.id === overId);
+        // Within-section reorder
+        const oldIndex = tasks.findIndex((task) => task.id === activeId);
+        const newIndex = tasks.findIndex((task) => task.id === overId);
 
-            if (oldIndex !== -1 && newIndex !== -1) {
-                setTasks((tasks) => arrayMove(tasks, oldIndex, newIndex));
-            }
+        if (oldIndex !== -1 && newIndex !== -1) {
+            setTasks((tasks) => arrayMove(tasks, oldIndex, newIndex));
         }
 
         setActiveId(null);
@@ -119,7 +138,7 @@ export const TaskContainer = () => {
     const sensors = useSensors(
         useSensor(PointerSensor, {
             activationConstraint: {
-                delay: 100, // Delay on dragging to prevent accidental drags when clicking
+                delay: 50, // Delay on dragging to prevent accidental drags when clicking
                 tolerance: 5, // Allow a small movement before activating the drag
             },
         }),
@@ -135,6 +154,7 @@ export const TaskContainer = () => {
                     sensors={sensors}
                     collisionDetection={pointerWithin}
                     onDragStart={handleDragStart}
+                    onDragOver={handleDragOver}
                     onDragEnd={handleDragEnd}
                     onDragCancel={handleDragCancel}
                 >
