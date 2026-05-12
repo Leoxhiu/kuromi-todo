@@ -11,6 +11,10 @@ import {
 import { TaskCard } from "./TaskCard";
 import { useDroppable } from "@dnd-kit/core";
 import { Section as SectionType, Task } from "types/tasks";
+import {
+    SortableContext,
+    verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 
 type TaskSectionProps = {
     section: SectionType;
@@ -40,11 +44,16 @@ export const TaskSection = ({ section, tasks }: TaskSectionProps) => {
                 </Group>
 
                 <ScrollAreaAutosize mah={750} type="scroll" scrollbarSize={8}>
-                    <Stack gap="xs">
-                        {tasks.map((task) => (
-                            <TaskCard key={task.id} task={task}></TaskCard>
-                        ))}
-                    </Stack>
+                    <SortableContext
+                        items={tasks.map((task) => task.id)}
+                        strategy={verticalListSortingStrategy}
+                    >
+                        <Stack gap="xs">
+                            {tasks.map((task) => (
+                                <TaskCard key={task.id} task={task}></TaskCard>
+                            ))}
+                        </Stack>
+                    </SortableContext>
                 </ScrollAreaAutosize>
             </Stack>
         </Paper>

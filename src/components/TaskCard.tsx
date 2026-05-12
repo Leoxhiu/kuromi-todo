@@ -1,22 +1,35 @@
 "use client";
 
 import { Paper, Text } from "@mantine/core";
-import { useDraggable } from "@dnd-kit/core";
 import { Task } from "types/tasks";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 type TaskCardProps = {
     task: Task;
+    injectStyle?: React.CSSProperties;
 };
 
-export const TaskCard = ({ task }: TaskCardProps) => {
-    const { attributes, listeners, setNodeRef, transform } = useDraggable({
+export const TaskCard = ({
+    task,
+    injectStyle,
+}: TaskCardProps & { style?: React.CSSProperties }) => {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging,
+    } = useSortable({
         id: task.id,
     });
 
     const style = {
-        transform: transform
-            ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
-            : undefined,
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.5 : 1,
+        ...injectStyle,
     };
 
     return (
