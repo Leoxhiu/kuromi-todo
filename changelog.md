@@ -1,3 +1,12 @@
+## 2026-05-13
+
+Added handleAddTask, Memoized TaskSection and TaskCard
+
+### Added
+
+- Added handleAddTask
+- Added memoization for TaskSection and TaskCard
+
 ## 2026-05-12
 
 Implemented sorting in task sections and enhanced DnD styling
