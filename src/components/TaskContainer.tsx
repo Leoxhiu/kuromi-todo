@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
     DndContext,
     DragOverlay,
@@ -27,32 +27,31 @@ export const TaskContainer = () => {
         { id: "DONE", title: "Done" },
     ];
 
-    const initialTasks: Task[] = [
-        {
-            id: "1",
-            status: "IN_PROGRESS",
-            content: "This is task 1",
-        },
-        {
-            id: "2",
-            status: "IN_PROGRESS",
-            content: "This is task 2",
-        },
-        {
-            id: "3",
-            status: "IN_PROGRESS",
-            content: "This is task 3",
-        },
-        {
-            id: "4",
-            status: "IN_PROGRESS",
-            content:
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-        },
-    ];
+    // const initialTasks: Task[] = [
+    //     {
+    //         id: "1",
+    //         status: "IN_PROGRESS",
+    //         content: "This is task 1",
+    //     },
+    //     {
+    //         id: "2",
+    //         status: "IN_PROGRESS",
+    //         content: "This is task 2",
+    //     },
+    //     {
+    //         id: "3",
+    //         status: "IN_PROGRESS",
+    //         content: "This is task 3",
+    //     },
+    //     {
+    //         id: "4",
+    //         status: "IN_PROGRESS",
+    //         content:
+    //             "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+    //     },
+    // ];
 
-    const [tasks, setTasks] = useState<Task[]>(initialTasks);
-    const invertedTasks = [...tasks].reverse();
+    const [tasks, setTasks] = useState<Task[]>([]);
 
     const [activeId, setActiveId] = useState<string | null>(null);
 
@@ -71,6 +70,15 @@ export const TaskContainer = () => {
     useEffect(() => {
         localStorage.setItem("tasks", JSON.stringify(tasks));
     }, [tasks]);
+
+    const handleAddTask = useCallback((sectionId: Section["id"]) => {
+        const newTask: Task = {
+            id: Date.now().toString(),
+            status: sectionId,
+            content: "New Task",
+        };
+        setTasks((tasks) => [newTask, ...tasks]); // Add new task to the top of the list for better visibility
+    }, []);
 
     function isCrossSectionMove(overId: Task["status"]): boolean {
         const sectionIds = sections.map((section) => section.id);
@@ -162,9 +170,10 @@ export const TaskContainer = () => {
                         <TaskSection
                             key={section.id}
                             section={section}
-                            tasks={invertedTasks.filter(
+                            tasks={tasks.filter(
                                 (task) => task.status === section.id,
                             )}
+                            handleAddTask={handleAddTask}
                         ></TaskSection>
                     ))}
 
