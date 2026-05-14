@@ -21,10 +21,16 @@ type TaskSectionProps = {
     section: SectionType;
     tasks: Task[];
     handleAddTask: (sectionId: SectionType["id"]) => void;
+    handleContentChange: (task: Task, content: string) => void;
 };
 
 export const TaskSection = memo(
-    ({ section, tasks, handleAddTask }: TaskSectionProps) => {
+    ({
+        section,
+        tasks,
+        handleAddTask,
+        handleContentChange,
+    }: TaskSectionProps) => {
         const { setNodeRef } = useDroppable({
             id: section.id,
         });
@@ -64,6 +70,9 @@ export const TaskSection = memo(
                                     <TaskCard
                                         key={task.id}
                                         task={task}
+                                        handleContentChange={
+                                            handleContentChange
+                                        }
                                     ></TaskCard>
                                 ))}
                             </Stack>

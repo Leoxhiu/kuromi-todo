@@ -4,17 +4,20 @@ import { Paper, Text } from "@mantine/core";
 import { Task } from "types/tasks";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { memo } from "react";
+import { memo, useState } from "react";
+import TiptapEditor from "./TiptapEditor";
 
 type TaskCardProps = {
     task: Task;
     injectStyle?: React.CSSProperties;
+    handleContentChange?: (task: Task, content: string) => void;
 };
 
 export const TaskCard = memo(
     ({
         task,
         injectStyle,
+        handleContentChange,
     }: TaskCardProps & { style?: React.CSSProperties }) => {
         const {
             attributes,
@@ -34,17 +37,39 @@ export const TaskCard = memo(
             ...injectStyle,
         };
 
+        const [isEditing, setIsEditing] = useState<boolean>(false);
+
         return (
             <Paper
-                {...attributes}
-                {...listeners}
                 ref={setNodeRef}
                 p="md"
                 radius="sm"
                 withBorder
                 style={style}
+                onDoubleClick={() => setIsEditing(true)}
             >
-                <Text>{task.content}</Text>
+                <span
+                    className="material-symbols-outlined"
+                    {...attributes}
+                    {...listeners}
+                    style={{ cursor: "grab", float: "right" }}
+                >
+                    drag_indicator
+                </span>
+                {isEditing ? (
+                    <TiptapEditor
+                        content={task.content}
+                        handleContentChange={(content) =>
+                            handleContentChange?.(task, content)
+                        }
+                        setIsEditing={setIsEditing}
+                    />
+                ) : (
+                    <Text
+                        dangerouslySetInnerHTML={{ __html: task.content }}
+                        lineClamp={3}
+                    />
+                )}
             </Paper>
         );
     },

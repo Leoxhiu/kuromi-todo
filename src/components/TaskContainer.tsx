@@ -8,7 +8,6 @@ import {
     DragOverEvent,
     DragEndEvent,
     DragCancelEvent,
-    KeyboardSensor,
     PointerSensor,
     pointerWithin,
     useSensor,
@@ -18,7 +17,7 @@ import { SimpleGrid } from "@mantine/core";
 import { TaskSection } from "@/components/TaskSection";
 import { Section, Task } from "types/tasks";
 import { TaskCard } from "./TaskCard";
-import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
+import { arrayMove } from "@dnd-kit/sortable";
 
 export const TaskContainer = () => {
     const sections: Section[] = [
@@ -27,35 +26,11 @@ export const TaskContainer = () => {
         { id: "DONE", title: "Done" },
     ];
 
-    // const initialTasks: Task[] = [
-    //     {
-    //         id: "1",
-    //         status: "IN_PROGRESS",
-    //         content: "This is task 1",
-    //     },
-    //     {
-    //         id: "2",
-    //         status: "IN_PROGRESS",
-    //         content: "This is task 2",
-    //     },
-    //     {
-    //         id: "3",
-    //         status: "IN_PROGRESS",
-    //         content: "This is task 3",
-    //     },
-    //     {
-    //         id: "4",
-    //         status: "IN_PROGRESS",
-    //         content:
-    //             "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-    //     },
-    // ];
-
     const [tasks, setTasks] = useState<Task[]>([]);
 
     const [activeId, setActiveId] = useState<string | null>(null);
 
-    const [mounted, setMounted] = useState(false);
+    const [mounted, setMounted] = useState<boolean>(false);
 
     const activeTask = tasks.find((task) => task.id === activeId);
 
@@ -79,6 +54,21 @@ export const TaskContainer = () => {
         };
         setTasks((tasks) => [newTask, ...tasks]); // Add new task to the top of the list for better visibility
     }, []);
+
+    const handleContentChange = useCallback(
+        (selectedTask: Task, content: string) => {
+            setTasks((tasks) =>
+                tasks.map((task) => {
+                    if (task.id === selectedTask.id) {
+                        return { ...task, content };
+                    }
+
+                    return task;
+                }),
+            );
+        },
+        [],
+    );
 
     function isCrossSectionMove(overId: Task["status"]): boolean {
         const sectionIds = sections.map((section) => section.id);
@@ -146,13 +136,13 @@ export const TaskContainer = () => {
     const sensors = useSensors(
         useSensor(PointerSensor, {
             activationConstraint: {
-                delay: 50, // Delay on dragging to prevent accidental drags when clicking
+                delay: 0, // Delay on dragging to prevent accidental drags when clicking
                 tolerance: 5, // Allow a small movement before activating the drag
             },
         }),
-        useSensor(KeyboardSensor, {
-            coordinateGetter: sortableKeyboardCoordinates,
-        }),
+        // useSensor(KeyboardSensor, {
+        //     coordinateGetter: sortableKeyboardCoordinates,
+        // }),
     );
 
     return (
@@ -174,6 +164,7 @@ export const TaskContainer = () => {
                                 (task) => task.status === section.id,
                             )}
                             handleAddTask={handleAddTask}
+                            handleContentChange={handleContentChange}
                         ></TaskSection>
                     ))}
 
