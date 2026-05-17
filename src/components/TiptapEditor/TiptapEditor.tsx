@@ -2,6 +2,7 @@
 
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import TiptapBubbleMenu from "./BubbleMenu/TiptapBubbleMenu";
 
 interface TiptapEditorProps {
     content?: string;
@@ -28,7 +29,12 @@ const TiptapEditor = ({
         },
     });
 
-    return <EditorContent editor={editor} />;
+    return (
+        <>
+            <TiptapBubbleMenu editor={editor} />
+            <EditorContent editor={editor} />
+        </>
+    );
 };
 
 export default TiptapEditor;

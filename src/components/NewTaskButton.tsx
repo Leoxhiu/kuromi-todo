@@ -1,19 +1,11 @@
-"use client";
+import { ActionIcon } from "@mantine/core";
+import { ReactNode } from "react";
 
-import { Button } from "@mantine/core";
-
-type NewTODOButtonProps = {
-    label?: string;
+type NewTaskButtonProps = {
+    onClick: () => void;
+    children: ReactNode;
 };
 
-export const NewTODOButton = ({ label = "Add task" }: NewTODOButtonProps) => {
-    const handleClick = () => {
-        console.log("Button clicked");
-    };
-
-    return (
-        <Button fullWidth variant="light" onClick={handleClick}>
-            {label}
-        </Button>
-    );
+export const NewTaskButton = ({ onClick, children }: NewTaskButtonProps) => {
+    return <ActionIcon onClick={onClick}>{children}</ActionIcon>;
 };

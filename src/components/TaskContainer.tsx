@@ -16,7 +16,7 @@ import {
 import { SimpleGrid } from "@mantine/core";
 import { TaskSection } from "@/components/TaskSection";
 import { Section, Task } from "types/tasks";
-import { TaskCard } from "./TaskCard";
+import { TaskCard } from "./TaskCard/TaskCard";
 import { arrayMove } from "@dnd-kit/sortable";
 
 export const TaskContainer = () => {

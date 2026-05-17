@@ -1,0 +1,6 @@
+/* Task content display styling */
+.taskContent {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    white-space: normal;
+}

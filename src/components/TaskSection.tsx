@@ -1,14 +1,7 @@
 "use client";
 
-import {
-    Button,
-    Group,
-    Paper,
-    ScrollAreaAutosize,
-    Stack,
-    Title,
-} from "@mantine/core";
-import { TaskCard } from "./TaskCard";
+import { Group, Paper, ScrollAreaAutosize, Stack, Title } from "@mantine/core";
+import { TaskCard } from "./TaskCard/TaskCard";
 import { useDroppable } from "@dnd-kit/core";
 import { Section as SectionType, Task } from "types/tasks";
 import {
@@ -16,6 +9,8 @@ import {
     verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { memo } from "react";
+import { RiAddLine } from "@remixicon/react";
+import { NewTaskButton } from "./NewTaskButton";
 
 type TaskSectionProps = {
     section: SectionType;
@@ -50,9 +45,11 @@ export const TaskSection = memo(
                             {section.title}
                         </Title>
                         {section.id === "IN_PROGRESS" && (
-                            <Button onClick={() => handleAddTask(section.id)}>
-                                Add
-                            </Button>
+                            <NewTaskButton
+                                onClick={() => handleAddTask(section.id)}
+                            >
+                                <RiAddLine />
+                            </NewTaskButton>
                         )}
                     </Group>
 

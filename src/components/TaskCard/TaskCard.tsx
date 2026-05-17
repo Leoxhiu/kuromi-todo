@@ -1,11 +1,13 @@
 "use client";
 
-import { Paper, Text } from "@mantine/core";
+import { Box, Checkbox, Group, Paper, Text } from "@mantine/core";
 import { Task } from "types/tasks";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { memo, useState } from "react";
-import TiptapEditor from "./TiptapEditor";
+import TiptapEditor from "../TiptapEditor/TiptapEditor";
+import classes from "./TaskCard.module.css";
+import { RiDraggable } from "@remixicon/react";
 
 type TaskCardProps = {
     task: Task;
@@ -14,11 +16,7 @@ type TaskCardProps = {
 };
 
 export const TaskCard = memo(
-    ({
-        task,
-        injectStyle,
-        handleContentChange,
-    }: TaskCardProps & { style?: React.CSSProperties }) => {
+    ({ task, injectStyle, handleContentChange }: TaskCardProps) => {
         const {
             attributes,
             listeners,
@@ -48,14 +46,29 @@ export const TaskCard = memo(
                 style={style}
                 onDoubleClick={() => setIsEditing(true)}
             >
-                <span
-                    className="material-symbols-outlined"
-                    {...attributes}
-                    {...listeners}
-                    style={{ cursor: "grab", float: "right" }}
-                >
-                    drag_indicator
-                </span>
+                <Group justify="space-between">
+                    <Checkbox></Checkbox>
+                    {isEditing ? (
+                        <></>
+                    ) : (
+                        <Text
+                            className={classes.taskContent}
+                            dangerouslySetInnerHTML={{ __html: task.content }}
+                            lineClamp={1}
+                        />
+                    )}
+
+                    <RiDraggable
+                        {...attributes}
+                        {...listeners}
+                        style={{
+                            cursor: "grab",
+                            float: "right",
+                            outline: "none",
+                        }}
+                    />
+                </Group>
+
                 {isEditing ? (
                     <TiptapEditor
                         content={task.content}
@@ -65,10 +78,7 @@ export const TaskCard = memo(
                         setIsEditing={setIsEditing}
                     />
                 ) : (
-                    <Text
-                        dangerouslySetInnerHTML={{ __html: task.content }}
-                        lineClamp={3}
-                    />
+                    <></>
                 )}
             </Paper>
         );
