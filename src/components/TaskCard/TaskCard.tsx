@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Checkbox, Group, Paper, Text } from "@mantine/core";
+import { Box, Checkbox, Flex, Paper, Text } from "@mantine/core";
 import { Task } from "types/tasks";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -46,17 +46,32 @@ export const TaskCard = memo(
                 style={style}
                 onDoubleClick={() => setIsEditing(true)}
             >
-                <Group justify="space-between">
-                    <Checkbox></Checkbox>
-                    {isEditing ? (
-                        <></>
-                    ) : (
+                <Flex
+                    justify="space-between"
+                    align="center"
+                    wrap="nowrap"
+                    gap="xl"
+                    mih="32"
+                >
+                    <Flex
+                        justify="flex-start"
+                        align="center"
+                        wrap="nowrap"
+                        gap="sm"
+                        mih="32"
+                    >
+                        <Checkbox></Checkbox>
                         <Text
                             className={classes.taskContent}
-                            dangerouslySetInnerHTML={{ __html: task.content }}
+                            dangerouslySetInnerHTML={{
+                                __html: isEditing ? "" : task.content,
+                            }}
                             lineClamp={1}
+                            style={{
+                                visibility: isEditing ? "hidden" : "visible",
+                            }}
                         />
-                    )}
+                    </Flex>
 
                     <RiDraggable
                         {...attributes}
@@ -65,9 +80,10 @@ export const TaskCard = memo(
                             cursor: "grab",
                             float: "right",
                             outline: "none",
+                            flexShrink: 0,
                         }}
                     />
-                </Group>
+                </Flex>
 
                 {isEditing ? (
                     <TiptapEditor
@@ -78,7 +94,7 @@ export const TaskCard = memo(
                         setIsEditing={setIsEditing}
                     />
                 ) : (
-                    <></>
+                    <Box></Box>
                 )}
             </Paper>
         );

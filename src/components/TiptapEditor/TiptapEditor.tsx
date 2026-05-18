@@ -3,6 +3,8 @@
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import TiptapBubbleMenu from "./BubbleMenu/TiptapBubbleMenu";
+import { Box } from "@mantine/core";
+import { useClickOutside } from "@mantine/hooks";
 
 interface TiptapEditorProps {
     content?: string;
@@ -15,6 +17,8 @@ const TiptapEditor = ({
     handleContentChange,
     setIsEditing,
 }: TiptapEditorProps) => {
+    const ref = useClickOutside(() => setIsEditing(false));
+
     const editor = useEditor({
         extensions: [StarterKit],
         content: content || "Type something...",
@@ -24,16 +28,13 @@ const TiptapEditor = ({
         onUpdate: ({ editor }) => {
             handleContentChange(editor.getHTML() || "");
         },
-        onBlur: () => {
-            setIsEditing(false);
-        },
     });
 
     return (
-        <>
+        <Box mt="xs" ref={ref}>
             <TiptapBubbleMenu editor={editor} />
             <EditorContent editor={editor} />
-        </>
+        </Box>
     );
 };
 
