@@ -1,3 +1,17 @@
+## 2026-05-20
+
+Added TiptapJs editor and enhanced the styling of TaskCard
+
+### Added
+
+- Added TiptapJs editor with BubbleMenu
+- Added draggable handler for TaskCard
+- Added checkbox for TaskCard
+
+### Updated
+
+- Enhanced the styling of TaskCard after adding new components
+
 ## 2026-05-13
 
 Added handleAddTask, Memoized TaskSection and TaskCard
