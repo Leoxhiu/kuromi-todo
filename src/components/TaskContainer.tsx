@@ -145,6 +145,11 @@ export const TaskContainer = () => {
         // }),
     );
 
+    //TODO: Migrate DnD Kit to the latest version
+    //TODO: Create a DnD Note section, Change Done section to On Hold section (Rename only, keep Done status)
+    //TODO: Add Droppable Trash section to delete tasks from list
+    //TODO: Add logic to the checkbox to mark tasks as Done, strikethrough and move down to the In Progress section
+
     return (
         <SimpleGrid h="100%" cols={{ base: 1, sm: 2, md: 3 }}>
             {!mounted ? null : (
