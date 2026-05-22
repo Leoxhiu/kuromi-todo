@@ -2,22 +2,19 @@
 
 import { useState, useEffect, useCallback } from "react";
 import {
-    DndContext,
+    DragDropProvider,
     DragOverlay,
     DragStartEvent,
     DragOverEvent,
     DragEndEvent,
-    DragCancelEvent,
-    PointerSensor,
-    pointerWithin,
-    useSensor,
-    useSensors,
-} from "@dnd-kit/core";
-import { SimpleGrid } from "@mantine/core";
+} from "@dnd-kit/react";
+import { move } from "@dnd-kit/helpers";
+import { isSortable } from "@dnd-kit/react/sortable";
+import { PointerSensor, PointerActivationConstraints } from "@dnd-kit/dom";
+import { Grid } from "@mantine/core";
 import { TaskSection } from "@/components/TaskSection";
 import { Section, Task } from "types/tasks";
 import { TaskCard } from "./TaskCard/TaskCard";
-import { arrayMove } from "@dnd-kit/sortable";
 
 export const TaskContainer = () => {
     const sections: Section[] = [
@@ -28,11 +25,11 @@ export const TaskContainer = () => {
 
     const [tasks, setTasks] = useState<Task[]>([]);
 
-    const [activeId, setActiveId] = useState<string | null>(null);
+    const [sourceId, setSourceId] = useState<string | null>(null);
 
     const [mounted, setMounted] = useState<boolean>(false);
 
-    const activeTask = tasks.find((task) => task.id === activeId);
+    const activeTask = tasks.find((task) => task.id === sourceId);
 
     useEffect(() => {
         const savedTasks = localStorage.getItem("tasks");
@@ -70,107 +67,105 @@ export const TaskContainer = () => {
         [],
     );
 
-    function isCrossSectionMove(overId: Task["status"]): boolean {
+    function isCrossSectionMove(targetId: Task["status"]): boolean {
         const sectionIds = sections.map((section) => section.id);
-        return sectionIds.includes(overId);
+        return sectionIds.includes(targetId);
     }
 
     function handleDragStart(event: DragStartEvent) {
-        const { active } = event;
-        const taskId = active.id as string;
+        const { source } = event.operation;
+        const taskId = source!.id as string;
 
-        setActiveId(taskId);
+        setSourceId(taskId);
     }
 
     function handleDragOver(event: DragOverEvent) {
-        const { active, over } = event;
+        const { source, target } = event.operation;
 
-        if (!over) return;
+        if (!target) return;
 
-        const activeId = active.id as string;
-        const overId = over.id as Task["status"];
+        const sourceId = source!.id as string;
+        const targetId = target.id as Task["status"];
 
-        // Check if the over ID is a section ID (cross-section move)
-        if (!isCrossSectionMove(overId)) {
+        // Check if the target ID is a section ID (cross-section move)
+        if (!isCrossSectionMove(targetId)) {
             return;
         }
 
         // Update task status on drag over for immediate visual feedback
-        const newStatus = overId as Task["status"];
+        const newStatus = targetId as Task["status"];
         setTasks(() =>
             tasks.map((task) =>
-                task.id === activeId ? { ...task, status: newStatus } : task,
+                task.id === sourceId ? { ...task, status: newStatus } : task,
             ),
         );
     }
 
     function handleDragEnd(event: DragEndEvent) {
-        const { active, over } = event;
+        const { operation, canceled } = event;
+        const { source, target } = operation;
 
-        if (!over) return;
+        if (!target) return;
 
-        const activeId = active.id as string;
-        const overId = over.id as Task["status"];
+        const targetId = target.id as Task["status"];
 
-        // Check if the over ID is a section ID (cross-section move)
-        if (isCrossSectionMove(overId)) {
+        // Check if the target ID is a section ID (cross-section move)
+        if (canceled || isCrossSectionMove(targetId)) {
             return;
         }
 
-        // Within-section reorder
-        const oldIndex = tasks.findIndex((task) => task.id === activeId);
-        const newIndex = tasks.findIndex((task) => task.id === overId);
+        setTasks((tasks) => move(tasks, event));
 
-        if (oldIndex !== -1 && newIndex !== -1) {
-            setTasks((tasks) => arrayMove(tasks, oldIndex, newIndex));
-        }
-
-        setActiveId(null);
+        setSourceId(null);
     }
 
-    function handleDragCancel(event: DragCancelEvent) {
-        void event;
-        setActiveId(null);
-    }
+    // const sensors = (defaults) => [
+    //     ...defaults.filter((sensor) => sensor !== PointerSensor),
+    //     PointerSensor.configure({
+    //         activationConstraints(event, source) {
+    //             if (event.pointerType === "touch") {
+    //                 return [
+    //                     new PointerActivationConstraints.Delay({
+    //                         value: 500,
+    //                         tolerance: { x: 5, y: 5 },
+    //                     }),
+    //                 ];
+    //             }
+    //             return [
+    //                 new PointerActivationConstraints.Distance({ value: 8 }),
+    //             ];
+    //         },
+    //     }),
+    // ];
 
-    const sensors = useSensors(
-        useSensor(PointerSensor, {
-            activationConstraint: {
-                delay: 0, // Delay on dragging to prevent accidental drags when clicking
-                tolerance: 5, // Allow a small movement before activating the drag
-            },
-        }),
-        // useSensor(KeyboardSensor, {
-        //     coordinateGetter: sortableKeyboardCoordinates,
-        // }),
-    );
-
-    //TODO: Migrate DnD Kit to the latest version
     //TODO: Create a DnD Note section, Change Done section to On Hold section (Rename only, keep Done status)
     //TODO: Add Droppable Trash section to delete tasks from list
     //TODO: Add logic to the checkbox to mark tasks as Done, strikethrough and move down to the In Progress section
+    //TODO: Add TextStyleKit extension to Tiptap editor
 
     return (
-        <SimpleGrid h="100%" cols={{ base: 1, sm: 2, md: 3 }}>
+        <Grid h="100%" grow>
             {!mounted ? null : (
-                <DndContext
-                    sensors={sensors}
-                    collisionDetection={pointerWithin}
+                <DragDropProvider
+                    // sensors={sensors}
                     onDragStart={handleDragStart}
                     onDragOver={handleDragOver}
                     onDragEnd={handleDragEnd}
-                    onDragCancel={handleDragCancel}
                 >
                     {sections.map((section) => (
-                        <TaskSection
+                        <Grid.Col
                             key={section.id}
-                            section={section}
-                            tasks={tasks.filter(
-                                (task) => task.status === section.id,
-                            )}
-                            handleAddTask={handleAddTask}
-                            handleContentChange={handleContentChange}
-                        ></TaskSection>
+                            span={{ base: 12, md: 6, lg: 4 }}
+                        >
+                            <TaskSection
+                                section={section}
+                                tasks={tasks.filter(
+                                    (task) => task.status === section.id,
+                                )}
+                                handleAddTask={handleAddTask}
+                                handleContentChange={handleContentChange}
+                            ></TaskSection>
+                        </Grid.Col>
                     ))}
 
                     <DragOverlay>
@@ -182,11 +177,12 @@ export const TaskContainer = () => {
                                     border: "2px solid rgba(0, 0, 0, 0.59)",
                                 }}
                                 task={activeTask}
+                                index={0}
                             />
                         ) : null}
                     </DragOverlay>
-                </DndContext>
+                </DragDropProvider>
             )}
-        </SimpleGrid>
+        </Grid>
     );
 };

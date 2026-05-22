@@ -2,12 +2,9 @@
 
 import { Group, Paper, ScrollAreaAutosize, Stack, Title } from "@mantine/core";
 import { TaskCard } from "./TaskCard/TaskCard";
-import { useDroppable } from "@dnd-kit/core";
+import { useDroppable } from "@dnd-kit/react";
+import { CollisionPriority } from "@dnd-kit/abstract";
 import { Section as SectionType, Task } from "types/tasks";
-import {
-    SortableContext,
-    verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
 import { memo } from "react";
 import { RiAddLine } from "@remixicon/react";
 import { NewTaskButton } from "./NewTaskButton";
@@ -26,13 +23,16 @@ export const TaskSection = memo(
         handleAddTask,
         handleContentChange,
     }: TaskSectionProps) => {
-        const { setNodeRef } = useDroppable({
+        const { isDropTarget, ref } = useDroppable({
             id: section.id,
+            type: section.id,
+            accept: "task",
+            collisionPriority: CollisionPriority.Low,
         });
 
         return (
             <Paper
-                ref={setNodeRef}
+                ref={ref}
                 h="100%"
                 p="md"
                 bg="violet.0"
@@ -54,26 +54,21 @@ export const TaskSection = memo(
                     </Group>
 
                     <ScrollAreaAutosize
-                        mah={750}
+                        h="100%"
+                        mah={745}
                         type="scroll"
                         scrollbarSize={8}
                     >
-                        <SortableContext
-                            items={tasks.map((task) => task.id)}
-                            strategy={verticalListSortingStrategy}
-                        >
-                            <Stack gap="xs">
-                                {tasks.map((task) => (
-                                    <TaskCard
-                                        key={task.id}
-                                        task={task}
-                                        handleContentChange={
-                                            handleContentChange
-                                        }
-                                    ></TaskCard>
-                                ))}
-                            </Stack>
-                        </SortableContext>
+                        <Stack gap="xs">
+                            {tasks.map((task, index) => (
+                                <TaskCard
+                                    key={task.id}
+                                    task={task}
+                                    index={index}
+                                    handleContentChange={handleContentChange}
+                                ></TaskCard>
+                            ))}
+                        </Stack>
                     </ScrollAreaAutosize>
                 </Stack>
             </Paper>

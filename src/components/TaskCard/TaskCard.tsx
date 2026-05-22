@@ -2,8 +2,7 @@
 
 import { Box, Checkbox, Flex, Paper, Text } from "@mantine/core";
 import { Task } from "types/tasks";
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import { useSortable } from "@dnd-kit/react/sortable";
 import { memo, useState } from "react";
 import TiptapEditor from "../TiptapEditor/TiptapEditor";
 import classes from "./TaskCard.module.css";
@@ -11,26 +10,22 @@ import { RiDraggable } from "@remixicon/react";
 
 type TaskCardProps = {
     task: Task;
+    index: number;
     injectStyle?: React.CSSProperties;
     handleContentChange?: (task: Task, content: string) => void;
 };
 
 export const TaskCard = memo(
-    ({ task, injectStyle, handleContentChange }: TaskCardProps) => {
-        const {
-            attributes,
-            listeners,
-            setNodeRef,
-            transform,
-            transition,
-            isDragging,
-        } = useSortable({
+    ({ task, index, injectStyle, handleContentChange }: TaskCardProps) => {
+        const { ref, isDragging } = useSortable({
             id: task.id,
+            index: index,
+            type: "task",
+            accept: "task",
+            group: task.status,
         });
 
         const style = {
-            transform: CSS.Transform.toString(transform),
-            transition,
             opacity: isDragging ? 0.5 : 1,
             ...injectStyle,
         };
@@ -39,7 +34,7 @@ export const TaskCard = memo(
 
         return (
             <Paper
-                ref={setNodeRef}
+                ref={ref}
                 p="md"
                 radius="sm"
                 withBorder
@@ -74,8 +69,6 @@ export const TaskCard = memo(
                     </Flex>
 
                     <RiDraggable
-                        {...attributes}
-                        {...listeners}
                         style={{
                             cursor: "grab",
                             float: "right",
