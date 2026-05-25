@@ -11,23 +11,18 @@ import { RiDraggable } from "@remixicon/react";
 type TaskCardProps = {
     task: Task;
     index: number;
-    injectStyle?: React.CSSProperties;
     handleContentChange?: (task: Task, content: string) => void;
 };
 
 export const TaskCard = memo(
-    ({ task, index, injectStyle, handleContentChange }: TaskCardProps) => {
-        const { ref, isDragging } = useSortable({
+    ({ task, index, handleContentChange }: TaskCardProps) => {
+        const { ref, handleRef, isDragSource } = useSortable({
             id: task.id,
             index: index,
-            type: "task",
-            accept: "task",
-            group: task.status,
         });
 
         const style = {
-            opacity: isDragging ? 0.5 : 1,
-            ...injectStyle,
+            opacity: isDragSource ? 0.5 : 1,
         };
 
         const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -69,6 +64,7 @@ export const TaskCard = memo(
                     </Flex>
 
                     <RiDraggable
+                        ref={handleRef}
                         style={{
                             cursor: "grab",
                             float: "right",

@@ -3,31 +3,29 @@
 import { Group, Paper, ScrollAreaAutosize, Stack, Title } from "@mantine/core";
 import { TaskCard } from "./TaskCard/TaskCard";
 import { useDroppable } from "@dnd-kit/react";
-import { CollisionPriority } from "@dnd-kit/abstract";
-import { Section as SectionType, Task } from "types/tasks";
+import { ColumnId, Task } from "types/tasks";
 import { memo } from "react";
 import { RiAddLine } from "@remixicon/react";
 import { NewTaskButton } from "./NewTaskButton";
 
 type TaskSectionProps = {
-    section: SectionType;
+    id: ColumnId;
+    label: string;
     tasks: Task[];
-    handleAddTask: (sectionId: SectionType["id"]) => void;
+    handleAddTask: (columnId: ColumnId) => void;
     handleContentChange: (task: Task, content: string) => void;
 };
 
 export const TaskSection = memo(
     ({
-        section,
+        id,
+        label,
         tasks,
         handleAddTask,
         handleContentChange,
     }: TaskSectionProps) => {
-        const { isDropTarget, ref } = useDroppable({
-            id: section.id,
-            type: section.id,
-            accept: "task",
-            collisionPriority: CollisionPriority.Low,
+        const { ref } = useDroppable({
+            id,
         });
 
         return (
@@ -42,12 +40,10 @@ export const TaskSection = memo(
                 <Stack h="100%" gap="sm">
                     <Group justify="space-between">
                         <Title order={4} fw="bold">
-                            {section.title}
+                            {label}
                         </Title>
-                        {section.id === "IN_PROGRESS" && (
-                            <NewTaskButton
-                                onClick={() => handleAddTask(section.id)}
-                            >
+                        {id === "IN_PROGRESS" && (
+                            <NewTaskButton onClick={() => handleAddTask(id)}>
                                 <RiAddLine />
                             </NewTaskButton>
                         )}
