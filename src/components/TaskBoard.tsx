@@ -13,7 +13,7 @@ import { TaskColumn } from "components/TaskColumn";
 import { Board, ColumnId, Task } from "types/tasks";
 import { TaskCardOverlay } from "./TaskCard/TaskCardOverlay";
 
-export const TaskBoard = () => {
+const TaskBoard = () => {
     const boardColumns: { id: ColumnId; label: string }[] = [
         { id: "PRIORITY", label: "Priority" },
         { id: "IN_PROGRESS", label: "In Progress" },
@@ -139,3 +139,5 @@ export const TaskBoard = () => {
         </Grid>
     );
 };
+
+export default TaskBoard;

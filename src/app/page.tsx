@@ -1,4 +1,4 @@
-import { TaskBoard } from "components/TaskBoard";
+import TaskBoard from "components/TaskBoard";
 import { Container, Stack, Title } from "@mantine/core";
 
 export default function Home() {

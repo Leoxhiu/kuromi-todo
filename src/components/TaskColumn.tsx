@@ -8,13 +8,13 @@ import { memo } from "react";
 import { RiAddLine } from "@remixicon/react";
 import { NewTaskButton } from "./NewTaskButton";
 
-type TaskColumnProps = {
+interface TaskColumnProps {
     id: ColumnId;
     label: string;
     tasks: Task[];
     handleAddTask: (columnId: ColumnId) => void;
     handleContentChange: (task: Task, content: string) => void;
-};
+}
 
 export const TaskColumn = memo(
     ({

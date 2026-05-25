@@ -8,11 +8,11 @@ import TiptapEditor from "../TiptapEditor/TiptapEditor";
 import classes from "./TaskCard.module.css";
 import { RiDraggable } from "@remixicon/react";
 
-type TaskCardProps = {
+interface TaskCardProps {
     task: Task;
     index: number;
     handleContentChange?: (task: Task, content: string) => void;
-};
+}
 
 export const TaskCard = memo(
     ({ task, index, handleContentChange }: TaskCardProps) => {
