@@ -1,45 +1,38 @@
 "use client";
 
 import { Box, Checkbox, Flex, Paper, Text } from "@mantine/core";
-import { Task } from "types/tasks";
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import { Task } from "types/board.types";
+import { useSortable } from "@dnd-kit/react/sortable";
 import { memo, useState } from "react";
 import TiptapEditor from "../TiptapEditor/TiptapEditor";
 import classes from "./TaskCard.module.css";
 import { RiDraggable } from "@remixicon/react";
+import { DND_TYPES } from "constants/board.constants";
 
-type TaskCardProps = {
+interface TaskCardProps {
     task: Task;
-    injectStyle?: React.CSSProperties;
+    index: number;
     handleContentChange?: (task: Task, content: string) => void;
-};
+}
 
 export const TaskCard = memo(
-    ({ task, injectStyle, handleContentChange }: TaskCardProps) => {
-        const {
-            attributes,
-            listeners,
-            setNodeRef,
-            transform,
-            transition,
-            isDragging,
-        } = useSortable({
+    ({ task, index, handleContentChange }: TaskCardProps) => {
+        const { ref, handleRef, isDragSource } = useSortable({
             id: task.id,
+            index: index,
+            type: DND_TYPES.TASK_ITEM,
+            accept: DND_TYPES.TASK_ITEM,
         });
 
         const style = {
-            transform: CSS.Transform.toString(transform),
-            transition,
-            opacity: isDragging ? 0.5 : 1,
-            ...injectStyle,
+            opacity: isDragSource ? 0.5 : 1,
         };
 
         const [isEditing, setIsEditing] = useState<boolean>(false);
 
         return (
             <Paper
-                ref={setNodeRef}
+                ref={ref}
                 p="md"
                 radius="sm"
                 withBorder
@@ -74,8 +67,7 @@ export const TaskCard = memo(
                     </Flex>
 
                     <RiDraggable
-                        {...attributes}
-                        {...listeners}
+                        ref={handleRef}
                         style={{
                             cursor: "grab",
                             float: "right",
