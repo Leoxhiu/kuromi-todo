@@ -9,11 +9,11 @@ import {
 } from "@dnd-kit/react";
 import { move } from "@dnd-kit/helpers";
 import { Grid } from "@mantine/core";
-import { TaskSection } from "components/TaskSection";
+import { TaskColumn } from "components/TaskColumn";
 import { Board, ColumnId, Task } from "types/tasks";
 import { TaskCardOverlay } from "./TaskCard/TaskCardOverlay";
 
-export const TaskContainer = () => {
+export const TaskBoard = () => {
     const boardColumns: { id: ColumnId; label: string }[] = [
         { id: "PRIORITY", label: "Priority" },
         { id: "IN_PROGRESS", label: "In Progress" },
@@ -119,13 +119,13 @@ export const TaskContainer = () => {
                             key={column.id}
                             span={{ base: 12, md: 6, lg: 4 }}
                         >
-                            <TaskSection
+                            <TaskColumn
                                 id={column.id}
                                 label={column.label}
                                 tasks={board[column.id]}
                                 handleAddTask={handleAddTask}
                                 handleContentChange={handleContentChange}
-                            ></TaskSection>
+                            ></TaskColumn>
                         </Grid.Col>
                     ))}
 

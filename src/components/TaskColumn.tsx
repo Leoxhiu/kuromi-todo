@@ -8,7 +8,7 @@ import { memo } from "react";
 import { RiAddLine } from "@remixicon/react";
 import { NewTaskButton } from "./NewTaskButton";
 
-type TaskSectionProps = {
+type TaskColumnProps = {
     id: ColumnId;
     label: string;
     tasks: Task[];
@@ -16,14 +16,14 @@ type TaskSectionProps = {
     handleContentChange: (task: Task, content: string) => void;
 };
 
-export const TaskSection = memo(
+export const TaskColumn = memo(
     ({
         id,
         label,
         tasks,
         handleAddTask,
         handleContentChange,
-    }: TaskSectionProps) => {
+    }: TaskColumnProps) => {
         const { ref } = useDroppable({
             id,
         });
