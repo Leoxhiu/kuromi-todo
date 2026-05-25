@@ -13,18 +13,20 @@ import { TaskColumn } from "components/TaskColumn";
 import { Board, ColumnId, Task } from "types/tasks";
 import { TaskCardOverlay } from "./TaskCard/TaskCardOverlay";
 
-const TaskBoard = () => {
-    const boardColumns: { id: ColumnId; label: string }[] = [
-        { id: "PRIORITY", label: "Priority" },
-        { id: "IN_PROGRESS", label: "In Progress" },
-        { id: "DONE", label: "Done" },
-    ];
+export const BOARD_COLUMNS: { id: ColumnId; label: string }[] = [
+    { id: "PRIORITY", label: "Priority" },
+    { id: "IN_PROGRESS", label: "In Progress" },
+    { id: "DONE", label: "Done" },
+] as const;
 
-    const [board, setBoard] = useState<Board>({
-        PRIORITY: [],
-        IN_PROGRESS: [],
-        DONE: [],
-    });
+export const INITIAL_BOARD: Board = {
+    PRIORITY: [],
+    IN_PROGRESS: [],
+    DONE: [],
+};
+
+const TaskBoard = () => {
+    const [board, setBoard] = useState<Board>(INITIAL_BOARD);
 
     const [mounted, setMounted] = useState<boolean>(false);
 
@@ -114,7 +116,7 @@ const TaskBoard = () => {
                     onDragStart={handleDragStart}
                     onDragOver={handleDragOver}
                 >
-                    {boardColumns.map((column) => (
+                    {BOARD_COLUMNS.map((column) => (
                         <Grid.Col
                             key={column.id}
                             span={{ base: 12, md: 6, lg: 4 }}
