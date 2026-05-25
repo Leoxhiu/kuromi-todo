@@ -1,12 +1,13 @@
 "use client";
 
 import { Box, Checkbox, Flex, Paper, Text } from "@mantine/core";
-import { Task } from "types/tasks";
+import { Task } from "types/board.types";
 import { useSortable } from "@dnd-kit/react/sortable";
 import { memo, useState } from "react";
 import TiptapEditor from "../TiptapEditor/TiptapEditor";
 import classes from "./TaskCard.module.css";
 import { RiDraggable } from "@remixicon/react";
+import { DND_TYPES } from "constants/board.constants";
 
 interface TaskCardProps {
     task: Task;
@@ -19,6 +20,8 @@ export const TaskCard = memo(
         const { ref, handleRef, isDragSource } = useSortable({
             id: task.id,
             index: index,
+            type: DND_TYPES.TASK_ITEM,
+            accept: DND_TYPES.TASK_ITEM,
         });
 
         const style = {

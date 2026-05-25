@@ -1,7 +1,7 @@
 "use client";
 
 import { Checkbox, Flex, Paper, Text } from "@mantine/core";
-import { Task } from "types/tasks";
+import { Task } from "types/board.types";
 import { memo } from "react";
 import classes from "./TaskCard.module.css";
 import { RiDraggable } from "@remixicon/react";

@@ -10,7 +10,7 @@ import {
 import { move } from "@dnd-kit/helpers";
 import { Grid } from "@mantine/core";
 import { TaskColumn } from "components/TaskColumn";
-import { Board, ColumnId, Task } from "types/tasks";
+import { Board, ColumnId, Task } from "types/board.types";
 import { TaskCardOverlay } from "./TaskCard/TaskCardOverlay";
 
 export const BOARD_COLUMNS: { id: ColumnId; label: string }[] = [

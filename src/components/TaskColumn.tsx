@@ -3,10 +3,11 @@
 import { Group, Paper, ScrollAreaAutosize, Stack, Title } from "@mantine/core";
 import { TaskCard } from "./TaskCard/TaskCard";
 import { useDroppable } from "@dnd-kit/react";
-import { ColumnId, Task } from "types/tasks";
+import { ColumnId, Task } from "types/board.types";
 import { memo } from "react";
 import { RiAddLine } from "@remixicon/react";
 import { NewTaskButton } from "./NewTaskButton";
+import { DND_TYPES } from "constants/board.constants";
 
 interface TaskColumnProps {
     id: ColumnId;
@@ -26,6 +27,8 @@ export const TaskColumn = memo(
     }: TaskColumnProps) => {
         const { ref } = useDroppable({
             id,
+            type: DND_TYPES.TASK_COLUMN,
+            accept: DND_TYPES.TASK_ITEM,
         });
 
         return (
