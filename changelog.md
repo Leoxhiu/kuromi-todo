@@ -1,3 +1,22 @@
+## 2026-05-26
+
+Migrated dnd-kit to latest version
+
+### Added
+
+- Added TaskCardOverlay
+- Added board.constants.ts
+
+### Changed
+
+- Changed the data structure and approach of handleAddTask, handleContentChange
+- Renamed TaskContainer and TaskSection
+- Changed type to interface for TaskColumnProps and TaskCardProps
+
+### Removed
+
+- Removed handleDragEnd, sensors, collisions from dnd components
+
 ## 2026-05-20
 
 Added TiptapJs editor and enhanced the styling of TaskCard
