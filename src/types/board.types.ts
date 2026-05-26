@@ -1,4 +1,4 @@
-export type ColumnId = "PRIORITY" | "IN_PROGRESS" | "DONE";
+export type ColumnId = "PRIORITY" | "IN_PROGRESS" | "ON_HOLD" | "NOTE";
 
 export type Task = {
     id: string;
