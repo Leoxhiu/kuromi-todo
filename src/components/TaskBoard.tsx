@@ -8,7 +8,7 @@ import {
     DragOverEvent,
 } from "@dnd-kit/react";
 import { move } from "@dnd-kit/helpers";
-import { Grid, Stack } from "@mantine/core";
+import { Box, Flex, Stack } from "@mantine/core";
 import { TaskColumn } from "components/TaskColumn";
 import { Board, ColumnId, Task } from "types/board.types";
 import { TaskCardOverlay } from "./TaskCard/TaskCardOverlay";
@@ -37,7 +37,8 @@ const TaskBoard = () => {
     const [mounted, setMounted] = useState<boolean>(false);
 
     const [activeId, setActiveId] = useState<string | null>(null);
-    const activeTask = activeId ? findTask(activeId) : null;
+    const activeColumn = activeId ? findColumn(board, activeId) : undefined;
+    const activeTask = activeId ? findTask(activeId) : undefined;
 
     useEffect(() => {
         const savedBoard = localStorage.getItem("board");
@@ -116,60 +117,61 @@ const TaskBoard = () => {
     //TODO: Add TextStyleKit extension to Tiptap editor
 
     return (
-        <Grid h="100%" grow>
-            {!mounted ? null : (
-                <DragDropProvider
-                    onDragStart={handleDragStart}
-                    onDragOver={handleDragOver}
-                >
-                    <Grid.Col span={{ base: 12, md: 6, lg: 4 }}>
-                        <TaskColumn
-                            id={COLUMN_MAP.PRIORITY.id}
-                            label={COLUMN_MAP.PRIORITY.label}
-                            tasks={board.PRIORITY}
-                            handleAddTask={handleAddTask}
-                            handleContentChange={handleContentChange}
-                        />
-                    </Grid.Col>
-
-                    <Grid.Col span={{ base: 12, md: 6, lg: 4 }}>
-                        <TaskColumn
-                            id={COLUMN_MAP.IN_PROGRESS.id}
-                            label={COLUMN_MAP.IN_PROGRESS.label}
-                            tasks={board.IN_PROGRESS}
-                            handleAddTask={handleAddTask}
-                            handleContentChange={handleContentChange}
-                        />
-                    </Grid.Col>
-
-                    <Grid.Col span={{ base: 12, md: 12, lg: 4 }}>
-                        <Stack h="100%" gap="md">
+        <DragDropProvider
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+        >
+            <Flex h="100%" w="100%" gap="sm">
+                {!mounted ? null : (
+                    <>
+                        <Box flex={1}>
                             <TaskColumn
-                                id={COLUMN_MAP.ON_HOLD.id}
-                                label={COLUMN_MAP.ON_HOLD.label}
-                                tasks={board.ON_HOLD}
+                                id={COLUMN_MAP.PRIORITY.id}
+                                label={COLUMN_MAP.PRIORITY.label}
+                                tasks={board.PRIORITY}
                                 handleAddTask={handleAddTask}
                                 handleContentChange={handleContentChange}
                             />
+                        </Box>
 
+                        <Box flex={1}>
                             <TaskColumn
-                                id={COLUMN_MAP.NOTE.id}
-                                label={COLUMN_MAP.NOTE.label}
-                                tasks={board.NOTE}
+                                id={COLUMN_MAP.IN_PROGRESS.id}
+                                label={COLUMN_MAP.IN_PROGRESS.label}
+                                tasks={board.IN_PROGRESS}
                                 handleAddTask={handleAddTask}
                                 handleContentChange={handleContentChange}
                             />
-                        </Stack>
-                    </Grid.Col>
+                        </Box>
 
-                    <DragOverlay>
-                        {activeTask ? (
-                            <TaskCardOverlay task={activeTask} />
-                        ) : null}
-                    </DragOverlay>
-                </DragDropProvider>
-            )}
-        </Grid>
+                        <Box flex={1}>
+                            <Stack h="100%" gap="md">
+                                <TaskColumn
+                                    id={COLUMN_MAP.ON_HOLD.id}
+                                    label={COLUMN_MAP.ON_HOLD.label}
+                                    tasks={board.ON_HOLD}
+                                    handleAddTask={handleAddTask}
+                                    handleContentChange={handleContentChange}
+                                />
+
+                                <TaskColumn
+                                    id={COLUMN_MAP.NOTE.id}
+                                    label={COLUMN_MAP.NOTE.label}
+                                    tasks={board.NOTE}
+                                    handleAddTask={handleAddTask}
+                                    handleContentChange={handleContentChange}
+                                />
+                            </Stack>
+                        </Box>
+                    </>
+                )}
+            </Flex>
+            <DragOverlay>
+                {activeColumn && activeTask ? (
+                    <TaskCardOverlay column={activeColumn} task={activeTask} />
+                ) : null}
+            </DragOverlay>
+        </DragDropProvider>
     );
 };
 

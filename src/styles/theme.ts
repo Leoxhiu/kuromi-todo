@@ -3,7 +3,7 @@
 import { Button, createTheme, MantineColorsTuple } from "@mantine/core";
 import { FONT_WEIGHTS } from "./fontWeights";
 
-const myColor: MantineColorsTuple = [
+const themeColor: MantineColorsTuple = [
     "#f2f9ea",
     "#e6eede",
     "#cddac0",
@@ -17,9 +17,9 @@ const myColor: MantineColorsTuple = [
 ];
 export const theme = createTheme({
     colors: {
-        myColor,
+        themeColor,
     },
-    primaryColor: "myColor",
+    primaryColor: "themeColor",
 
     fontFamily: "DM Sans, sans-serif",
 

@@ -1,5 +1,5 @@
 import TaskBoard from "components/TaskBoard";
-import { Container, Stack, Title } from "@mantine/core";
+import { Box, Container, Stack, Title } from "@mantine/core";
 
 export default function Home() {
     return (
@@ -8,7 +8,9 @@ export default function Home() {
                 <Title order={2} ta="center">
                     To-do list!!
                 </Title>
-                <TaskBoard />
+                <Box flex={1} mih={0}>
+                    <TaskBoard />
+                </Box>
             </Stack>
         </Container>
     );

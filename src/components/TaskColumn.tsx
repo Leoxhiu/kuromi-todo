@@ -1,7 +1,6 @@
 "use client";
 
 import {
-    Box,
     Grid,
     Group,
     Paper,
@@ -33,22 +32,27 @@ export const TaskColumn = memo(
         handleAddTask,
         handleContentChange,
     }: TaskColumnProps) => {
+        const isNote = id === "NOTE";
+        const type = isNote ? DND_TYPES.NOTE_COLUMN : DND_TYPES.TASK_COLUMN;
+        const accept = isNote ? DND_TYPES.NOTE_ITEM : DND_TYPES.TASK_ITEM;
+
         const { ref } = useDroppable({
             id,
-            type: DND_TYPES.TASK_COLUMN,
-            accept: DND_TYPES.TASK_ITEM,
+            type,
+            accept,
         });
 
         return (
             <Paper
                 ref={ref}
                 h="100%"
+                mih={0}
                 p="md"
-                bg="myColor.1"
+                bg="themeColor.1"
                 shadow="xs"
                 withBorder
             >
-                <Stack h="100%" gap="sm">
+                <Stack h="100%" miw={0} mih={0} gap="sm">
                     <Grid align="center">
                         <Grid.Col span={4} />
 
@@ -72,8 +76,7 @@ export const TaskColumn = memo(
                     </Grid>
 
                     <ScrollAreaAutosize
-                        h="100%"
-                        mah={745}
+                        flex={1}
                         type="scroll"
                         scrollbarSize={8}
                     >
@@ -81,6 +84,7 @@ export const TaskColumn = memo(
                             {tasks.map((task, index) => (
                                 <TaskCard
                                     key={task.id}
+                                    isNote={isNote}
                                     task={task}
                                     index={index}
                                     handleContentChange={handleContentChange}
