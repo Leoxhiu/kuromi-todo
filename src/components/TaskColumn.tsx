@@ -44,7 +44,7 @@ export const TaskColumn = memo(
                 ref={ref}
                 h="100%"
                 p="md"
-                bg="violet.0"
+                bg="myColor.1"
                 shadow="xs"
                 withBorder
             >
