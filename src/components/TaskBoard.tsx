@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
     DragDropProvider,
     DragOverlay,
@@ -37,8 +37,24 @@ const TaskBoard = () => {
     const [mounted, setMounted] = useState<boolean>(false);
 
     const [activeId, setActiveId] = useState<string | null>(null);
-    const activeColumn = activeId ? findColumn(board, activeId) : undefined;
-    const activeTask = activeId ? findTask(activeId) : undefined;
+
+    const activeInfo = useMemo(() => {
+        if (!activeId)
+            return {
+                column: undefined as ColumnId | undefined,
+                task: undefined as Task | undefined,
+            };
+
+        for (const col of Object.keys(board) as ColumnId[]) {
+            const t = board[col].find((task) => task.id === activeId);
+            if (t) return { column: col, task: t };
+        }
+
+        return {
+            column: undefined as ColumnId | undefined,
+            task: undefined as Task | undefined,
+        };
+    }, [board, activeId]);
 
     useEffect(() => {
         const savedBoard = localStorage.getItem("board");
@@ -58,14 +74,6 @@ const TaskBoard = () => {
         return (Object.keys(board) as ColumnId[]).find((columnId) =>
             board[columnId].some((task) => task.id === taskId),
         );
-    }
-
-    function findTask(taskId: string): Task | undefined {
-        const columnId = findColumn(board, taskId);
-
-        if (!columnId) return;
-
-        return board[columnId].find((task) => task.id === taskId);
     }
 
     const handleAddTask = (columnId: ColumnId) => {
@@ -167,8 +175,11 @@ const TaskBoard = () => {
                 )}
             </Flex>
             <DragOverlay>
-                {activeColumn && activeTask ? (
-                    <TaskCardOverlay column={activeColumn} task={activeTask} />
+                {activeInfo.column && activeInfo.task ? (
+                    <TaskCardOverlay
+                        column={activeInfo.column}
+                        task={activeInfo.task}
+                    />
                 ) : null}
             </DragOverlay>
         </DragDropProvider>
