@@ -14,13 +14,14 @@ import { BoardColumn } from "components/BoardColumn";
 import { type Board, ColumnId, Item } from "types/board.types";
 import { ItemCardOverlay } from "./ItemCard/ItemCardOverlay";
 import { TrashColumn } from "./TrashColumn";
+import { COLUMN_IDS, ITEM_STATUS } from "constants/board.constants";
 
 export const BOARD_COLUMNS: { id: ColumnId; label: string }[] = [
-    { id: "PRIORITY", label: "Priority" },
-    { id: "IN_PROGRESS", label: "In Progress" },
-    { id: "ON_HOLD", label: "On Hold" },
-    { id: "NOTE", label: "Notes" },
-    { id: "TRASH", label: " Trash" },
+    { id: COLUMN_IDS.PRIORITY, label: "Priority" },
+    { id: COLUMN_IDS.IN_PROGRESS, label: "In Progress" },
+    { id: COLUMN_IDS.ON_HOLD, label: "On Hold" },
+    { id: COLUMN_IDS.NOTE, label: "Notes" },
+    { id: COLUMN_IDS.TRASH, label: " Trash" },
 ] as const;
 
 export const INITIAL_BOARD: Board = {
@@ -90,6 +91,7 @@ const Board = () => {
                 columnId === COLUMN_MAP.IN_PROGRESS.id
                     ? "New task"
                     : "New note",
+            status: ITEM_STATUS.INCOMPLETE,
         };
 
         setBoard((prevBoard) => ({
@@ -99,17 +101,42 @@ const Board = () => {
     };
 
     const handleContentChange = useCallback(
-        (editedItem: Item, newContent: string) => {
+        (targetItem: Item, newContent: string) => {
             setBoard((prevBoard) => {
-                const columnId = findColumn(prevBoard, editedItem.id);
+                const columnId = findColumn(prevBoard, targetItem.id);
 
                 if (!columnId) return prevBoard;
 
                 return {
                     ...prevBoard,
                     [columnId]: prevBoard[columnId].map((item) =>
-                        item.id === editedItem.id
+                        item.id === targetItem.id
                             ? { ...item, content: newContent }
+                            : item,
+                    ),
+                };
+            });
+        },
+        [],
+    );
+
+    const handleStatusChange = useCallback(
+        (targetItem: Item, newStatus: boolean) => {
+            setBoard((prevBoard) => {
+                const columnId = findColumn(prevBoard, targetItem.id);
+
+                if (!columnId) return prevBoard;
+
+                return {
+                    ...prevBoard,
+                    [columnId]: prevBoard[columnId].map((item) =>
+                        item.id === targetItem.id
+                            ? {
+                                  ...item,
+                                  status: newStatus
+                                      ? ITEM_STATUS.COMPLETED
+                                      : ITEM_STATUS.INCOMPLETE,
+                              }
                             : item,
                     ),
                 };
@@ -167,7 +194,6 @@ const Board = () => {
         }
     }
 
-    //TODO: Add logic to the checkbox to mark items as Completed (status), strikethrough and move down to the In Progress section
     //TODO: Add TextStyleKit extension to Tiptap editor
 
     return (
@@ -198,6 +224,7 @@ const Board = () => {
                                     isTrashing={isTrashing}
                                     handleAddItem={handleAddItem}
                                     handleContentChange={handleContentChange}
+                                    handleStatusChange={handleStatusChange}
                                 />
                             </Box>
 
@@ -209,6 +236,7 @@ const Board = () => {
                                     isTrashing={isTrashing}
                                     handleAddItem={handleAddItem}
                                     handleContentChange={handleContentChange}
+                                    handleStatusChange={handleStatusChange}
                                 />
                             </Box>
 
@@ -223,6 +251,7 @@ const Board = () => {
                                         handleContentChange={
                                             handleContentChange
                                         }
+                                        handleStatusChange={handleStatusChange}
                                     />
 
                                     <BoardColumn
@@ -234,6 +263,7 @@ const Board = () => {
                                         handleContentChange={
                                             handleContentChange
                                         }
+                                        handleStatusChange={handleStatusChange}
                                     />
                                 </Stack>
                             </Box>
