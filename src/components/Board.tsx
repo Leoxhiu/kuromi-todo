@@ -9,7 +9,7 @@ import {
     DragEndEvent,
 } from "@dnd-kit/react";
 import { move } from "@dnd-kit/helpers";
-import { Box, Flex, Stack } from "@mantine/core";
+import { Affix, Box, Flex, Portal, Stack } from "@mantine/core";
 import { BoardColumn } from "components/BoardColumn";
 import { type Board, ColumnId, Item } from "types/board.types";
 import { ItemCardOverlay } from "./ItemCard/ItemCardOverlay";
@@ -168,10 +168,15 @@ const Board = () => {
                 onDragOver={handleDragOver}
                 onDragEnd={handleDragEnd}
             >
-                <TrashColumn
-                    id={COLUMN_MAP.TRASH.id}
-                    isDragging={isDragging}
-                ></TrashColumn>
+                <Portal>
+                    <Affix position={{ top: 24, right: 24 }} zIndex={200}>
+                        <TrashColumn
+                            id={COLUMN_MAP.TRASH.id}
+                            isDragging={isDragging}
+                        ></TrashColumn>
+                    </Affix>
+                </Portal>
+
                 <Flex h="100%" w="100%" gap="sm">
                     {!mounted ? null : (
                         <>

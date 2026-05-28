@@ -25,8 +25,8 @@ export const TrashColumn = memo(({ id, isDragging }: TrashColumnProps) => {
                     ref={ref}
                     bg="red"
                     radius="sm"
-                    p="lg"
-                    shadow="xl"
+                    p="md"
+                    shadow="md"
                     style={styles}
                 >
                     <RiDeleteBinFill color="white" />
