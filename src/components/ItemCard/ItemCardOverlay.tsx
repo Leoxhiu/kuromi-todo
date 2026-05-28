@@ -1,18 +1,18 @@
 "use client";
 
 import { Checkbox, Flex, Paper, Text } from "@mantine/core";
-import { ColumnId, Task } from "types/board.types";
+import { ColumnId, Item } from "types/board.types";
 import { memo } from "react";
-import classes from "./TaskCard.module.css";
+import classes from "./ItemCard.module.css";
 import { RiDraggable } from "@remixicon/react";
 
-type TaskCardOverlayProps = {
+type ItemCardOverlayProps = {
     column: ColumnId;
-    task: Task;
+    item: Item;
 };
 
-export const TaskCardOverlay = memo(
-    ({ column, task }: TaskCardOverlayProps) => {
+export const ItemCardOverlay = memo(
+    ({ column, item }: ItemCardOverlayProps) => {
         const isNote = column === "NOTE";
 
         return (
@@ -33,9 +33,9 @@ export const TaskCardOverlay = memo(
                     >
                         {!isNote && <Checkbox></Checkbox>}
                         <Text
-                            className={classes.taskContent}
+                            className={classes.itemContent}
                             dangerouslySetInnerHTML={{
-                                __html: task.content,
+                                __html: item.content,
                             }}
                             lineClamp={1}
                         />

@@ -1,5 +1,5 @@
-/* Task content display styling */
-.taskContent {
+/* Item content display styling */
+.itemContent {
     overflow-wrap: anywhere;
     word-break: break-word;
     white-space: normal;
