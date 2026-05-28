@@ -1,9 +1,26 @@
 "use client";
 
-import { Button, createTheme } from "@mantine/core";
+import { Button, createTheme, MantineColorsTuple } from "@mantine/core";
 import { FONT_WEIGHTS } from "./fontWeights";
 
+const themeColor: MantineColorsTuple = [
+    "#f2f9ea",
+    "#e6eede",
+    "#cddac0",
+    "#b7c9a4",
+    "#9bb482",
+    "#8da96f",
+    "#85a365",
+    "#728f53",
+    "#647f48",
+    "#546e39",
+];
 export const theme = createTheme({
+    colors: {
+        themeColor,
+    },
+    primaryColor: "themeColor",
+
     fontFamily: "DM Sans, sans-serif",
 
     // For Headings (Title)
@@ -27,8 +44,6 @@ export const theme = createTheme({
         lg: "18px",
         xl: "20px",
     },
-
-    primaryColor: "violet",
 
     shadows: {},
 

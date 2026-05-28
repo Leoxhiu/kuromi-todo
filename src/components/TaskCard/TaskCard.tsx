@@ -10,18 +10,21 @@ import { RiDraggable } from "@remixicon/react";
 import { DND_TYPES } from "constants/board.constants";
 
 interface TaskCardProps {
+    isNote: boolean;
     task: Task;
     index: number;
     handleContentChange?: (task: Task, content: string) => void;
 }
 
 export const TaskCard = memo(
-    ({ task, index, handleContentChange }: TaskCardProps) => {
+    ({ isNote, task, index, handleContentChange }: TaskCardProps) => {
+        const itemType = isNote ? DND_TYPES.NOTE_ITEM : DND_TYPES.TASK_ITEM;
+
         const { ref, handleRef, isDragSource } = useSortable({
             id: task.id,
             index: index,
-            type: DND_TYPES.TASK_ITEM,
-            accept: DND_TYPES.TASK_ITEM,
+            type: itemType,
+            accept: itemType,
         });
 
         const style = {
@@ -53,7 +56,7 @@ export const TaskCard = memo(
                         gap="sm"
                         mih="32"
                     >
-                        <Checkbox></Checkbox>
+                        {isNote ? null : <Checkbox></Checkbox>}
                         <Text
                             className={classes.taskContent}
                             dangerouslySetInnerHTML={{

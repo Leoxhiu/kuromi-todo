@@ -1,3 +1,16 @@
+## 2026-05-28
+
+Added Note column
+
+### Added
+
+- Added Note column and necessary dnd logics
+
+### Changed
+
+- Changed color theme
+- Enhanced the layout
+
 ## 2026-05-26
 
 Migrated dnd-kit to latest version
