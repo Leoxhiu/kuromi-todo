@@ -23,6 +23,8 @@ export const theme = createTheme({
 
     fontFamily: "DM Sans, sans-serif",
 
+    cursorType: "pointer",
+
     // For Headings (Title)
     headings: {
         fontFamily: "DM Sans, sans-serif",

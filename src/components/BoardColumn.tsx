@@ -23,6 +23,7 @@ interface BoardColumnProps {
     isTrashing: boolean;
     handleAddItem: (columnId: ColumnId) => void;
     handleContentChange: (item: Item, content: string) => void;
+    handleStatusChange: (item: Item, status: boolean) => void;
 }
 
 export const BoardColumn = memo(
@@ -33,6 +34,7 @@ export const BoardColumn = memo(
         isTrashing,
         handleAddItem,
         handleContentChange,
+        handleStatusChange,
     }: BoardColumnProps) => {
         const isNote = id === "NOTE";
         const type = isNote ? DND_TYPES.NOTE_COLUMN : DND_TYPES.TASK_COLUMN;
@@ -91,6 +93,7 @@ export const BoardColumn = memo(
                                     item={item}
                                     index={index}
                                     handleContentChange={handleContentChange}
+                                    handleStatusChange={handleStatusChange}
                                 ></ItemCard>
                             ))}
                         </Stack>
