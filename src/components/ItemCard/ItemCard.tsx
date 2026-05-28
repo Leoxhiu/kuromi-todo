@@ -1,27 +1,27 @@
 "use client";
 
 import { Box, Checkbox, Flex, Paper, Text } from "@mantine/core";
-import { Task } from "types/board.types";
+import { Item } from "types/board.types";
 import { useSortable } from "@dnd-kit/react/sortable";
 import { memo, useState } from "react";
 import TiptapEditor from "../TiptapEditor/TiptapEditor";
-import classes from "./TaskCard.module.css";
+import classes from "./ItemCard.module.css";
 import { RiDraggable } from "@remixicon/react";
 import { DND_TYPES } from "constants/board.constants";
 
-interface TaskCardProps {
+interface ItemCardProps {
     isNote: boolean;
-    task: Task;
+    item: Item;
     index: number;
-    handleContentChange?: (task: Task, content: string) => void;
+    handleContentChange?: (item: Item, content: string) => void;
 }
 
-export const TaskCard = memo(
-    ({ isNote, task, index, handleContentChange }: TaskCardProps) => {
+export const ItemCard = memo(
+    ({ isNote, item, index, handleContentChange }: ItemCardProps) => {
         const itemType = isNote ? DND_TYPES.NOTE_ITEM : DND_TYPES.TASK_ITEM;
 
         const { ref, handleRef, isDragSource } = useSortable({
-            id: task.id,
+            id: item.id,
             index: index,
             type: itemType,
             accept: itemType,
@@ -58,9 +58,9 @@ export const TaskCard = memo(
                     >
                         {isNote ? null : <Checkbox></Checkbox>}
                         <Text
-                            className={classes.taskContent}
+                            className={classes.itemContent}
                             dangerouslySetInnerHTML={{
-                                __html: isEditing ? "" : task.content,
+                                __html: isEditing ? "" : item.content,
                             }}
                             lineClamp={1}
                             style={{
@@ -82,9 +82,9 @@ export const TaskCard = memo(
 
                 {isEditing ? (
                     <TiptapEditor
-                        content={task.content}
+                        content={item.content}
                         handleContentChange={(content) =>
-                            handleContentChange?.(task, content)
+                            handleContentChange?.(item, content)
                         }
                         setIsEditing={setIsEditing}
                     />

@@ -9,9 +9,9 @@ import {
 } from "@dnd-kit/react";
 import { move } from "@dnd-kit/helpers";
 import { Box, Flex, Stack } from "@mantine/core";
-import { TaskColumn } from "components/TaskColumn";
-import { Board, ColumnId, Task } from "types/board.types";
-import { TaskCardOverlay } from "./TaskCard/TaskCardOverlay";
+import { BoardColumn } from "components/BoardColumn";
+import { type Board, ColumnId, Item } from "types/board.types";
+import { ItemCardOverlay } from "./ItemCard/ItemCardOverlay";
 
 export const BOARD_COLUMNS: { id: ColumnId; label: string }[] = [
     { id: "PRIORITY", label: "Priority" },
@@ -31,7 +31,7 @@ export const COLUMN_MAP = Object.fromEntries(
     BOARD_COLUMNS.map((column) => [column.id, column]),
 ) as Record<ColumnId, { id: ColumnId; label: string }>;
 
-const TaskBoard = () => {
+const Board = () => {
     const [board, setBoard] = useState<Board>(INITIAL_BOARD);
 
     const [mounted, setMounted] = useState<boolean>(false);
@@ -42,17 +42,17 @@ const TaskBoard = () => {
         if (!activeId)
             return {
                 column: undefined as ColumnId | undefined,
-                task: undefined as Task | undefined,
+                item: undefined as Item | undefined,
             };
 
         for (const col of Object.keys(board) as ColumnId[]) {
-            const t = board[col].find((task) => task.id === activeId);
-            if (t) return { column: col, task: t };
+            const t = board[col].find((item) => item.id === activeId);
+            if (t) return { column: col, item: t };
         }
 
         return {
             column: undefined as ColumnId | undefined,
-            task: undefined as Task | undefined,
+            item: undefined as Item | undefined,
         };
     }, [board, activeId]);
 
@@ -70,37 +70,37 @@ const TaskBoard = () => {
         localStorage.setItem("board", JSON.stringify(board));
     }, [board]);
 
-    function findColumn(board: Board, taskId: string): ColumnId | undefined {
+    function findColumn(board: Board, itemId: string): ColumnId | undefined {
         return (Object.keys(board) as ColumnId[]).find((columnId) =>
-            board[columnId].some((task) => task.id === taskId),
+            board[columnId].some((item) => item.id === itemId),
         );
     }
 
-    const handleAddTask = (columnId: ColumnId) => {
-        const newTask: Task = {
+    const handleAddItem = (columnId: ColumnId) => {
+        const newItem: Item = {
             id: crypto.randomUUID(),
             content: columnId === "IN_PROGRESS" ? "New task" : "New note",
         };
 
         setBoard((prevBoard) => ({
             ...prevBoard,
-            [columnId]: [newTask, ...prevBoard[columnId]],
+            [columnId]: [newItem, ...prevBoard[columnId]],
         }));
     };
 
     const handleContentChange = useCallback(
-        (editedTask: Task, newContent: string) => {
+        (editedItem: Item, newContent: string) => {
             setBoard((prevBoard) => {
-                const columnId = findColumn(prevBoard, editedTask.id);
+                const columnId = findColumn(prevBoard, editedItem.id);
 
                 if (!columnId) return prevBoard;
 
                 return {
                     ...prevBoard,
-                    [columnId]: prevBoard[columnId].map((task) =>
-                        task.id === editedTask.id
-                            ? { ...task, content: newContent }
-                            : task,
+                    [columnId]: prevBoard[columnId].map((item) =>
+                        item.id === editedItem.id
+                            ? { ...item, content: newContent }
+                            : item,
                     ),
                 };
             });
@@ -110,17 +110,17 @@ const TaskBoard = () => {
 
     function handleDragStart(event: DragStartEvent) {
         const { id } = event.operation.source!;
-        const taskId = id as string;
+        const itemId = id as string;
 
-        setActiveId(taskId);
+        setActiveId(itemId);
     }
 
     function handleDragOver(event: DragOverEvent) {
         setBoard((boards) => move(boards, event));
     }
 
-    //TODO: Add Droppable Trash section to delete tasks from list
-    //TODO: Add logic to the checkbox to mark tasks as Completed (status), strikethrough and move down to the In Progress section
+    //TODO: Add Droppable Trash section to delete items from list
+    //TODO: Add logic to the checkbox to mark items as Completed (status), strikethrough and move down to the In Progress section
     //TODO: Add TextStyleKit extension to Tiptap editor
 
     return (
@@ -133,42 +133,42 @@ const TaskBoard = () => {
                     {!mounted ? null : (
                         <>
                             <Box flex={1}>
-                                <TaskColumn
+                                <BoardColumn
                                     id={COLUMN_MAP.PRIORITY.id}
                                     label={COLUMN_MAP.PRIORITY.label}
-                                    tasks={board.PRIORITY}
-                                    handleAddTask={handleAddTask}
+                                    items={board.PRIORITY}
+                                    handleAddItem={handleAddItem}
                                     handleContentChange={handleContentChange}
                                 />
                             </Box>
 
                             <Box flex={1}>
-                                <TaskColumn
+                                <BoardColumn
                                     id={COLUMN_MAP.IN_PROGRESS.id}
                                     label={COLUMN_MAP.IN_PROGRESS.label}
-                                    tasks={board.IN_PROGRESS}
-                                    handleAddTask={handleAddTask}
+                                    items={board.IN_PROGRESS}
+                                    handleAddItem={handleAddItem}
                                     handleContentChange={handleContentChange}
                                 />
                             </Box>
 
                             <Box flex={1}>
                                 <Stack h="100%" gap="md">
-                                    <TaskColumn
+                                    <BoardColumn
                                         id={COLUMN_MAP.ON_HOLD.id}
                                         label={COLUMN_MAP.ON_HOLD.label}
-                                        tasks={board.ON_HOLD}
-                                        handleAddTask={handleAddTask}
+                                        items={board.ON_HOLD}
+                                        handleAddItem={handleAddItem}
                                         handleContentChange={
                                             handleContentChange
                                         }
                                     />
 
-                                    <TaskColumn
+                                    <BoardColumn
                                         id={COLUMN_MAP.NOTE.id}
                                         label={COLUMN_MAP.NOTE.label}
-                                        tasks={board.NOTE}
-                                        handleAddTask={handleAddTask}
+                                        items={board.NOTE}
+                                        handleAddItem={handleAddItem}
                                         handleContentChange={
                                             handleContentChange
                                         }
@@ -179,10 +179,10 @@ const TaskBoard = () => {
                     )}
                 </Flex>
                 <DragOverlay>
-                    {activeInfo.column && activeInfo.task ? (
-                        <TaskCardOverlay
+                    {activeInfo.column && activeInfo.item ? (
+                        <ItemCardOverlay
                             column={activeInfo.column}
-                            task={activeInfo.task}
+                            item={activeInfo.item}
                         />
                     ) : null}
                 </DragOverlay>
@@ -191,4 +191,4 @@ const TaskBoard = () => {
     );
 };
 
-export default TaskBoard;
+export default Board;

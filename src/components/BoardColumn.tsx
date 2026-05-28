@@ -8,30 +8,30 @@ import {
     Stack,
     Title,
 } from "@mantine/core";
-import { TaskCard } from "./TaskCard/TaskCard";
+import { ItemCard } from "./ItemCard/ItemCard";
 import { useDroppable } from "@dnd-kit/react";
-import { ColumnId, Task } from "types/board.types";
+import { ColumnId, Item } from "types/board.types";
 import { memo } from "react";
 import { RiAddLine } from "@remixicon/react";
-import { NewTaskButton } from "./NewTaskButton";
+import { NewItemButton } from "./NewItemButton";
 import { DND_TYPES } from "constants/board.constants";
 
-interface TaskColumnProps {
+interface BoardColumnProps {
     id: ColumnId;
     label: string;
-    tasks: Task[];
-    handleAddTask: (columnId: ColumnId) => void;
-    handleContentChange: (task: Task, content: string) => void;
+    items: Item[];
+    handleAddItem: (columnId: ColumnId) => void;
+    handleContentChange: (item: Item, content: string) => void;
 }
 
-export const TaskColumn = memo(
+export const BoardColumn = memo(
     ({
         id,
         label,
-        tasks,
-        handleAddTask,
+        items,
+        handleAddItem,
         handleContentChange,
-    }: TaskColumnProps) => {
+    }: BoardColumnProps) => {
         const isNote = id === "NOTE";
         const type = isNote ? DND_TYPES.NOTE_COLUMN : DND_TYPES.TASK_COLUMN;
         const accept = isNote ? DND_TYPES.NOTE_ITEM : DND_TYPES.TASK_ITEM;
@@ -65,11 +65,11 @@ export const TaskColumn = memo(
                         <Grid.Col span={4}>
                             <Group justify="flex-end">
                                 {(id === "IN_PROGRESS" || id === "NOTE") && (
-                                    <NewTaskButton
-                                        onClick={() => handleAddTask(id)}
+                                    <NewItemButton
+                                        onClick={() => handleAddItem(id)}
                                     >
                                         <RiAddLine />
-                                    </NewTaskButton>
+                                    </NewItemButton>
                                 )}
                             </Group>
                         </Grid.Col>
@@ -81,14 +81,14 @@ export const TaskColumn = memo(
                         scrollbarSize={8}
                     >
                         <Stack gap="sm">
-                            {tasks.map((task, index) => (
-                                <TaskCard
-                                    key={task.id}
+                            {items.map((item, index) => (
+                                <ItemCard
+                                    key={item.id}
                                     isNote={isNote}
-                                    task={task}
+                                    item={item}
                                     index={index}
                                     handleContentChange={handleContentChange}
-                                ></TaskCard>
+                                ></ItemCard>
                             ))}
                         </Stack>
                     </ScrollAreaAutosize>

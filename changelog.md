@@ -1,6 +1,6 @@
 ## 2026-05-28
 
-Added Note column
+Added Note column, Renamed components
 
 ### Added
 
@@ -10,6 +10,7 @@ Added Note column
 
 - Changed color theme
 - Enhanced the layout
+- Renamed components
 
 ## 2026-05-26
 

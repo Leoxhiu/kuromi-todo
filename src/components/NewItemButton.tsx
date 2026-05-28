@@ -1,11 +1,11 @@
 import { ActionIcon } from "@mantine/core";
 import { ReactNode } from "react";
 
-type NewTaskButtonProps = {
+type NewItemButtonProps = {
     onClick: () => void;
     children: ReactNode;
 };
 
-export const NewTaskButton = ({ onClick, children }: NewTaskButtonProps) => {
+export const NewItemButton = ({ onClick, children }: NewItemButtonProps) => {
     return <ActionIcon onClick={onClick}>{children}</ActionIcon>;
 };
