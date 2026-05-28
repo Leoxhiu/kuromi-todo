@@ -120,7 +120,7 @@ const TaskBoard = () => {
     }
 
     //TODO: Add Droppable Trash section to delete tasks from list
-    //TODO: Add logic to the checkbox to mark tasks as Done (status), strikethrough and move down to the In Progress section
+    //TODO: Add logic to the checkbox to mark tasks as Completed (status), strikethrough and move down to the In Progress section
     //TODO: Add TextStyleKit extension to Tiptap editor
 
     return (
