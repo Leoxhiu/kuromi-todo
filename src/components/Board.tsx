@@ -6,18 +6,21 @@ import {
     DragOverlay,
     DragStartEvent,
     DragOverEvent,
+    DragEndEvent,
 } from "@dnd-kit/react";
 import { move } from "@dnd-kit/helpers";
 import { Box, Flex, Stack } from "@mantine/core";
 import { BoardColumn } from "components/BoardColumn";
 import { type Board, ColumnId, Item } from "types/board.types";
 import { ItemCardOverlay } from "./ItemCard/ItemCardOverlay";
+import { TrashColumn } from "./TrashColumn";
 
 export const BOARD_COLUMNS: { id: ColumnId; label: string }[] = [
     { id: "PRIORITY", label: "Priority" },
     { id: "IN_PROGRESS", label: "In Progress" },
     { id: "ON_HOLD", label: "On Hold" },
     { id: "NOTE", label: "Notes" },
+    { id: "TRASH", label: " Trash" },
 ] as const;
 
 export const INITIAL_BOARD: Board = {
@@ -25,6 +28,7 @@ export const INITIAL_BOARD: Board = {
     IN_PROGRESS: [],
     ON_HOLD: [],
     NOTE: [],
+    TRASH: [],
 };
 
 export const COLUMN_MAP = Object.fromEntries(
@@ -35,6 +39,8 @@ const Board = () => {
     const [board, setBoard] = useState<Board>(INITIAL_BOARD);
 
     const [mounted, setMounted] = useState<boolean>(false);
+
+    const [isDragging, setIsDragging] = useState<boolean>(false);
 
     const [activeId, setActiveId] = useState<string | null>(null);
 
@@ -79,7 +85,10 @@ const Board = () => {
     const handleAddItem = (columnId: ColumnId) => {
         const newItem: Item = {
             id: crypto.randomUUID(),
-            content: columnId === "IN_PROGRESS" ? "New task" : "New note",
+            content:
+                columnId === COLUMN_MAP.IN_PROGRESS.id
+                    ? "New task"
+                    : "New note",
         };
 
         setBoard((prevBoard) => ({
@@ -113,10 +122,39 @@ const Board = () => {
         const itemId = id as string;
 
         setActiveId(itemId);
+        setIsDragging(true);
     }
 
     function handleDragOver(event: DragOverEvent) {
+        const { target } = event.operation;
+
+        if (!target) return;
+
+        if (target.id === COLUMN_MAP.TRASH.id) return;
         setBoard((boards) => move(boards, event));
+    }
+
+    function handleDragEnd(event: DragEndEvent) {
+        setIsDragging(false);
+
+        const { source, target } = event.operation;
+        if (!source || !target) return;
+
+        if (target.id === COLUMN_MAP.TRASH.id) {
+            // Remove the item from column
+            setBoard((prevBoard) => {
+                const columnId = findColumn(prevBoard, source.id as string);
+
+                if (!columnId) return prevBoard;
+
+                return {
+                    ...prevBoard,
+                    [columnId]: prevBoard[columnId].filter(
+                        (item) => item.id !== source.id,
+                    ),
+                };
+            });
+        }
     }
 
     //TODO: Add Droppable Trash section to delete items from list
@@ -128,7 +166,12 @@ const Board = () => {
             <DragDropProvider
                 onDragStart={handleDragStart}
                 onDragOver={handleDragOver}
+                onDragEnd={handleDragEnd}
             >
+                <TrashColumn
+                    id={COLUMN_MAP.TRASH.id}
+                    isDragging={isDragging}
+                ></TrashColumn>
                 <Flex h="100%" w="100%" gap="sm">
                     {!mounted ? null : (
                         <>
@@ -178,6 +221,7 @@ const Board = () => {
                         </>
                     )}
                 </Flex>
+
                 <DragOverlay>
                     {activeInfo.column && activeInfo.item ? (
                         <ItemCardOverlay
