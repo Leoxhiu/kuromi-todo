@@ -1,4 +1,9 @@
-export type ColumnId = "PRIORITY" | "IN_PROGRESS" | "ON_HOLD" | "NOTE";
+export type ColumnId =
+    | "PRIORITY"
+    | "IN_PROGRESS"
+    | "ON_HOLD"
+    | "NOTE"
+    | "TRASH";
 
 export type Item = {
     id: string;

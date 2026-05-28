@@ -9,14 +9,25 @@ import { RiDraggable } from "@remixicon/react";
 type ItemCardOverlayProps = {
     column: ColumnId;
     item: Item;
+    isTrashing: boolean;
 };
 
 export const ItemCardOverlay = memo(
-    ({ column, item }: ItemCardOverlayProps) => {
+    ({ column, item, isTrashing }: ItemCardOverlayProps) => {
         const isNote = column === "NOTE";
 
         return (
-            <Paper p="md" radius="sm" withBorder>
+            <Paper
+                p="md"
+                radius="sm"
+                withBorder
+                bd={isTrashing ? "2px solid red.6" : undefined}
+                style={{
+                    transform: isTrashing
+                        ? "scale(0.96) rotate(-2deg)"
+                        : undefined,
+                }}
+            >
                 <Flex
                     justify="space-between"
                     align="center"

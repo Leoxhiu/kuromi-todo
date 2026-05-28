@@ -1,10 +1,11 @@
 ## 2026-05-28
 
-Added Note column, Renamed components
+Added Note column, Renamed components, Added droppable trash column
 
 ### Added
 
 - Added Note column and necessary dnd logics
+- Added droppable trash column
 
 ### Changed
 

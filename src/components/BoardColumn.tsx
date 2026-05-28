@@ -20,6 +20,7 @@ interface BoardColumnProps {
     id: ColumnId;
     label: string;
     items: Item[];
+    isTrashing: boolean;
     handleAddItem: (columnId: ColumnId) => void;
     handleContentChange: (item: Item, content: string) => void;
 }
@@ -29,6 +30,7 @@ export const BoardColumn = memo(
         id,
         label,
         items,
+        isTrashing,
         handleAddItem,
         handleContentChange,
     }: BoardColumnProps) => {
@@ -85,6 +87,7 @@ export const BoardColumn = memo(
                                 <ItemCard
                                     key={item.id}
                                     isNote={isNote}
+                                    isTrashing={isTrashing}
                                     item={item}
                                     index={index}
                                     handleContentChange={handleContentChange}

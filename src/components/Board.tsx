@@ -6,18 +6,21 @@ import {
     DragOverlay,
     DragStartEvent,
     DragOverEvent,
+    DragEndEvent,
 } from "@dnd-kit/react";
 import { move } from "@dnd-kit/helpers";
-import { Box, Flex, Stack } from "@mantine/core";
+import { Affix, Box, Flex, Portal, Stack } from "@mantine/core";
 import { BoardColumn } from "components/BoardColumn";
 import { type Board, ColumnId, Item } from "types/board.types";
 import { ItemCardOverlay } from "./ItemCard/ItemCardOverlay";
+import { TrashColumn } from "./TrashColumn";
 
 export const BOARD_COLUMNS: { id: ColumnId; label: string }[] = [
     { id: "PRIORITY", label: "Priority" },
     { id: "IN_PROGRESS", label: "In Progress" },
     { id: "ON_HOLD", label: "On Hold" },
     { id: "NOTE", label: "Notes" },
+    { id: "TRASH", label: " Trash" },
 ] as const;
 
 export const INITIAL_BOARD: Board = {
@@ -25,6 +28,7 @@ export const INITIAL_BOARD: Board = {
     IN_PROGRESS: [],
     ON_HOLD: [],
     NOTE: [],
+    TRASH: [],
 };
 
 export const COLUMN_MAP = Object.fromEntries(
@@ -35,6 +39,9 @@ const Board = () => {
     const [board, setBoard] = useState<Board>(INITIAL_BOARD);
 
     const [mounted, setMounted] = useState<boolean>(false);
+
+    const [isDragging, setIsDragging] = useState<boolean>(false);
+    const [isTrashing, setIsTrashing] = useState<boolean>(false);
 
     const [activeId, setActiveId] = useState<string | null>(null);
 
@@ -79,7 +86,10 @@ const Board = () => {
     const handleAddItem = (columnId: ColumnId) => {
         const newItem: Item = {
             id: crypto.randomUUID(),
-            content: columnId === "IN_PROGRESS" ? "New task" : "New note",
+            content:
+                columnId === COLUMN_MAP.IN_PROGRESS.id
+                    ? "New task"
+                    : "New note",
         };
 
         setBoard((prevBoard) => ({
@@ -113,13 +123,50 @@ const Board = () => {
         const itemId = id as string;
 
         setActiveId(itemId);
+        setIsDragging(true);
+        setIsTrashing(false);
     }
 
     function handleDragOver(event: DragOverEvent) {
+        const { target } = event.operation;
+
+        if (!target) {
+            setIsTrashing(false);
+            return;
+        }
+
+        if (target.id === COLUMN_MAP.TRASH.id) {
+            setIsTrashing(true);
+            return;
+        }
+        setIsTrashing(false);
         setBoard((boards) => move(boards, event));
     }
 
-    //TODO: Add Droppable Trash section to delete items from list
+    function handleDragEnd(event: DragEndEvent) {
+        setIsDragging(false);
+
+        const { source, target } = event.operation;
+        if (!source || !target) return;
+
+        if (target.id === COLUMN_MAP.TRASH.id) {
+            setIsTrashing(false);
+            // Remove the item from column
+            setBoard((prevBoard) => {
+                const columnId = findColumn(prevBoard, source.id as string);
+
+                if (!columnId) return prevBoard;
+
+                return {
+                    ...prevBoard,
+                    [columnId]: prevBoard[columnId].filter(
+                        (item) => item.id !== source.id,
+                    ),
+                };
+            });
+        }
+    }
+
     //TODO: Add logic to the checkbox to mark items as Completed (status), strikethrough and move down to the In Progress section
     //TODO: Add TextStyleKit extension to Tiptap editor
 
@@ -128,7 +175,18 @@ const Board = () => {
             <DragDropProvider
                 onDragStart={handleDragStart}
                 onDragOver={handleDragOver}
+                onDragEnd={handleDragEnd}
             >
+                <Portal>
+                    <Affix position={{ top: 24, right: 24 }} zIndex={200}>
+                        <TrashColumn
+                            id={COLUMN_MAP.TRASH.id}
+                            isDragging={isDragging}
+                            isTrashing={isTrashing}
+                        ></TrashColumn>
+                    </Affix>
+                </Portal>
+
                 <Flex h="100%" w="100%" gap="sm">
                     {!mounted ? null : (
                         <>
@@ -137,6 +195,7 @@ const Board = () => {
                                     id={COLUMN_MAP.PRIORITY.id}
                                     label={COLUMN_MAP.PRIORITY.label}
                                     items={board.PRIORITY}
+                                    isTrashing={isTrashing}
                                     handleAddItem={handleAddItem}
                                     handleContentChange={handleContentChange}
                                 />
@@ -147,6 +206,7 @@ const Board = () => {
                                     id={COLUMN_MAP.IN_PROGRESS.id}
                                     label={COLUMN_MAP.IN_PROGRESS.label}
                                     items={board.IN_PROGRESS}
+                                    isTrashing={isTrashing}
                                     handleAddItem={handleAddItem}
                                     handleContentChange={handleContentChange}
                                 />
@@ -158,6 +218,7 @@ const Board = () => {
                                         id={COLUMN_MAP.ON_HOLD.id}
                                         label={COLUMN_MAP.ON_HOLD.label}
                                         items={board.ON_HOLD}
+                                        isTrashing={isTrashing}
                                         handleAddItem={handleAddItem}
                                         handleContentChange={
                                             handleContentChange
@@ -168,6 +229,7 @@ const Board = () => {
                                         id={COLUMN_MAP.NOTE.id}
                                         label={COLUMN_MAP.NOTE.label}
                                         items={board.NOTE}
+                                        isTrashing={isTrashing}
                                         handleAddItem={handleAddItem}
                                         handleContentChange={
                                             handleContentChange
@@ -178,11 +240,13 @@ const Board = () => {
                         </>
                     )}
                 </Flex>
+
                 <DragOverlay>
                     {activeInfo.column && activeInfo.item ? (
                         <ItemCardOverlay
                             column={activeInfo.column}
                             item={activeInfo.item}
+                            isTrashing={isTrashing}
                         />
                     ) : null}
                 </DragOverlay>
