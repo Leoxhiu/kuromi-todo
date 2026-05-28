@@ -11,13 +11,20 @@ import { DND_TYPES } from "constants/board.constants";
 
 interface ItemCardProps {
     isNote: boolean;
+    isTrashing: boolean;
     item: Item;
     index: number;
     handleContentChange?: (item: Item, content: string) => void;
 }
 
 export const ItemCard = memo(
-    ({ isNote, item, index, handleContentChange }: ItemCardProps) => {
+    ({
+        isNote,
+        isTrashing,
+        item,
+        index,
+        handleContentChange,
+    }: ItemCardProps) => {
         const itemType = isNote ? DND_TYPES.NOTE_ITEM : DND_TYPES.TASK_ITEM;
 
         const { ref, handleRef, isDragSource } = useSortable({
@@ -28,7 +35,7 @@ export const ItemCard = memo(
         });
 
         const style = {
-            opacity: isDragSource ? 0.5 : 1,
+            opacity: isDragSource && isTrashing ? 0 : isDragSource ? 0.5 : 1,
         };
 
         const [isEditing, setIsEditing] = useState<boolean>(false);

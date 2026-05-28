@@ -41,6 +41,7 @@ const Board = () => {
     const [mounted, setMounted] = useState<boolean>(false);
 
     const [isDragging, setIsDragging] = useState<boolean>(false);
+    const [isTrashing, setIsTrashing] = useState<boolean>(false);
 
     const [activeId, setActiveId] = useState<string | null>(null);
 
@@ -123,14 +124,22 @@ const Board = () => {
 
         setActiveId(itemId);
         setIsDragging(true);
+        setIsTrashing(false);
     }
 
     function handleDragOver(event: DragOverEvent) {
         const { target } = event.operation;
 
-        if (!target) return;
+        if (!target) {
+            setIsTrashing(false);
+            return;
+        }
 
-        if (target.id === COLUMN_MAP.TRASH.id) return;
+        if (target.id === COLUMN_MAP.TRASH.id) {
+            setIsTrashing(true);
+            return;
+        }
+        setIsTrashing(false);
         setBoard((boards) => move(boards, event));
     }
 
@@ -141,6 +150,7 @@ const Board = () => {
         if (!source || !target) return;
 
         if (target.id === COLUMN_MAP.TRASH.id) {
+            setIsTrashing(false);
             // Remove the item from column
             setBoard((prevBoard) => {
                 const columnId = findColumn(prevBoard, source.id as string);
@@ -157,7 +167,6 @@ const Board = () => {
         }
     }
 
-    //TODO: Add Droppable Trash section to delete items from list
     //TODO: Add logic to the checkbox to mark items as Completed (status), strikethrough and move down to the In Progress section
     //TODO: Add TextStyleKit extension to Tiptap editor
 
@@ -173,6 +182,7 @@ const Board = () => {
                         <TrashColumn
                             id={COLUMN_MAP.TRASH.id}
                             isDragging={isDragging}
+                            isTrashing={isTrashing}
                         ></TrashColumn>
                     </Affix>
                 </Portal>
@@ -185,6 +195,7 @@ const Board = () => {
                                     id={COLUMN_MAP.PRIORITY.id}
                                     label={COLUMN_MAP.PRIORITY.label}
                                     items={board.PRIORITY}
+                                    isTrashing={isTrashing}
                                     handleAddItem={handleAddItem}
                                     handleContentChange={handleContentChange}
                                 />
@@ -195,6 +206,7 @@ const Board = () => {
                                     id={COLUMN_MAP.IN_PROGRESS.id}
                                     label={COLUMN_MAP.IN_PROGRESS.label}
                                     items={board.IN_PROGRESS}
+                                    isTrashing={isTrashing}
                                     handleAddItem={handleAddItem}
                                     handleContentChange={handleContentChange}
                                 />
@@ -206,6 +218,7 @@ const Board = () => {
                                         id={COLUMN_MAP.ON_HOLD.id}
                                         label={COLUMN_MAP.ON_HOLD.label}
                                         items={board.ON_HOLD}
+                                        isTrashing={isTrashing}
                                         handleAddItem={handleAddItem}
                                         handleContentChange={
                                             handleContentChange
@@ -216,6 +229,7 @@ const Board = () => {
                                         id={COLUMN_MAP.NOTE.id}
                                         label={COLUMN_MAP.NOTE.label}
                                         items={board.NOTE}
+                                        isTrashing={isTrashing}
                                         handleAddItem={handleAddItem}
                                         handleContentChange={
                                             handleContentChange
@@ -232,6 +246,7 @@ const Board = () => {
                         <ItemCardOverlay
                             column={activeInfo.column}
                             item={activeInfo.item}
+                            isTrashing={isTrashing}
                         />
                     ) : null}
                 </DragOverlay>
