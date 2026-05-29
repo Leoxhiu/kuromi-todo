@@ -1,3 +1,11 @@
+## 2026-05-29
+
+Enhanced responsiveness
+
+### Added
+
+- Added CSS to enhance responsiveness
+
 ## 2026-05-28
 
 Added Note column, Renamed components, Added droppable trash column
