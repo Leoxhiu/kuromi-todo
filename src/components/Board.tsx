@@ -214,7 +214,7 @@ const Board = () => {
                 </Portal>
 
                 <SimpleGrid
-                    cols={{ base: 1, sm: 2, lg: 3 }}
+                    cols={{ base: 1, md: 3, lg: 3 }}
                     spacing="sm"
                     h="100%"
                 >
@@ -245,7 +245,10 @@ const Board = () => {
                             </Box>
 
                             <Box flex={1} mih={0} w="100%">
-                                <Stack h={{ base: 800, lg: "100%" }} gap="md">
+                                <Stack
+                                    h={{ base: 800, md: "100%", lg: "100%" }}
+                                    gap="md"
+                                >
                                     <BoardColumn
                                         id={COLUMN_MAP.ON_HOLD.id}
                                         label={COLUMN_MAP.ON_HOLD.label}
