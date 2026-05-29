@@ -9,7 +9,7 @@ import {
     DragEndEvent,
 } from "@dnd-kit/react";
 import { move } from "@dnd-kit/helpers";
-import { Affix, Box, Flex, Portal, Stack } from "@mantine/core";
+import { Affix, Box, Portal, SimpleGrid, Stack } from "@mantine/core";
 import { BoardColumn } from "components/BoardColumn";
 import { type Board, ColumnId, Item } from "types/board.types";
 import { ItemCardOverlay } from "./ItemCard/ItemCardOverlay";
@@ -213,10 +213,14 @@ const Board = () => {
                     </Affix>
                 </Portal>
 
-                <Flex h="100%" w="100%" gap="sm">
+                <SimpleGrid
+                    cols={{ base: 1, sm: 2, lg: 3 }}
+                    spacing="sm"
+                    h="100%"
+                >
                     {!mounted ? null : (
                         <>
-                            <Box flex={1}>
+                            <Box flex={1} mih={{ base: 400, lg: 0 }} w="100%">
                                 <BoardColumn
                                     id={COLUMN_MAP.PRIORITY.id}
                                     label={COLUMN_MAP.PRIORITY.label}
@@ -228,7 +232,7 @@ const Board = () => {
                                 />
                             </Box>
 
-                            <Box flex={1}>
+                            <Box flex={1} mih={{ base: 400, lg: 0 }} w="100%">
                                 <BoardColumn
                                     id={COLUMN_MAP.IN_PROGRESS.id}
                                     label={COLUMN_MAP.IN_PROGRESS.label}
@@ -240,8 +244,8 @@ const Board = () => {
                                 />
                             </Box>
 
-                            <Box flex={1}>
-                                <Stack h="100%" gap="md">
+                            <Box flex={1} mih={0} w="100%">
+                                <Stack h={{ base: 800, lg: "100%" }} gap="md">
                                     <BoardColumn
                                         id={COLUMN_MAP.ON_HOLD.id}
                                         label={COLUMN_MAP.ON_HOLD.label}
@@ -269,7 +273,7 @@ const Board = () => {
                             </Box>
                         </>
                     )}
-                </Flex>
+                </SimpleGrid>
 
                 <DragOverlay>
                     {activeInfo.column && activeInfo.item ? (
