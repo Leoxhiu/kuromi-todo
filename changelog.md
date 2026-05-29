@@ -1,10 +1,11 @@
 ## 2026-05-29
 
-Enhanced responsiveness
+Enhanced responsiveness, Added GitHub Actions workflow
 
 ### Added
 
 - Added CSS to enhance responsiveness
+- Added GitHub Actions workflow
 
 ## 2026-05-28
 
