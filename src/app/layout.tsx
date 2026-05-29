@@ -32,6 +32,7 @@ export default function RootLayout({
     return (
         <html lang="en" {...mantineHtmlProps} className={dmSans.className}>
             <head>
+                <meta name="Kuromi Todo" content="Kuromi Todo" />
                 <ColorSchemeScript />
             </head>
             <body>

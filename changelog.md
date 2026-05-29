@@ -1,11 +1,13 @@
 ## 2026-05-29
 
 Enhanced responsiveness, Added GitHub Actions workflow
+Added favicon
 
 ### Added
 
 - Added CSS to enhance responsiveness
 - Added GitHub Actions workflow
+- Added favicon
 
 ## 2026-05-28
 
